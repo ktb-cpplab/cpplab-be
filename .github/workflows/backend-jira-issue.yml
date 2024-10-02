@@ -1,0 +1,34 @@
+name: Create Jira Issue
+
+on:
+  workflow_dispatch:
+    inputs:
+      issuetype:
+        description: 'Type of the Jira issue (e.g., Task, Bug, Story)'
+        required: true
+        default: 'Task'  # 기본값 설정
+
+jobs:
+  create_jira_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Jira Issue
+        env:
+          JIRA_USER: ${{ secrets.JIRA_USER }}
+          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+          JIRA_URL: ${{ secrets.JIRA_URL }}
+        run: |
+          curl -X POST -u $JIRA_USER:$JIRA_TOKEN \
+          --data '{
+            "fields": {
+              "project": {
+                "key": "CLAB"  # Jira 프로젝트 키
+              },
+              "summary": "Issue from GitHub Actions",
+              "description": "This issue was automatically created by GitHub Actions.",
+              "issuetype": {
+                "name": "${{ github.event.inputs.issuetype }}"  # 입력받은 이슈 타입 사용
+              }
+            }
+          }' -H "Content-Type: application/json" \
+          $JIRA_URL/rest/api/2/issue/
