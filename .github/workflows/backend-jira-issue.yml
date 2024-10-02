@@ -22,12 +22,12 @@ jobs:
           --data '{
             "fields": {
               "project": {
-                "key": "CLAB"  # Jira 프로젝트 키
+                "key": "CLAB"
               },
               "summary": "Issue from GitHub Actions",
               "description": "This issue was automatically created by GitHub Actions.",
               "issuetype": {
-                "name": "${{ github.event.inputs.issuetype }}"  # 입력받은 이슈 타입 사용
+                "name": "${{ github.event.inputs.issuetype }}"
               }
             }
           }' -H "Content-Type: application/json" \
