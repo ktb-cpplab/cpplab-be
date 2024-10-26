@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-    // url: http://localhost:8080/swagger-ui/index.html/
+    // url: http://localhost:8080/swagger-ui/index.html
     @Bean
     public OpenAPI getOpenApi() {
         Server server = new Server().url("/");

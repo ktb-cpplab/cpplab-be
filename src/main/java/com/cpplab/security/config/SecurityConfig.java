@@ -92,7 +92,10 @@ public class SecurityConfig {
             // swagger
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/swagger-resources/**"
+            "/swagger-resources/**",
+
+            // 공통응답 테스트
+            "/api/test/**"
     };
 
 }
