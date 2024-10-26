@@ -21,12 +21,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @GetMapping("/my")
-    public String my() {
-        return "my";
-    }
-
-
     @PostMapping("/access")
     @Operation(summary = "엑세스 토큰 발급", description = "로그인 성공 후 바로 작동")
     public ResponseEntity<?> access(HttpServletRequest request, HttpServletResponse response) {
