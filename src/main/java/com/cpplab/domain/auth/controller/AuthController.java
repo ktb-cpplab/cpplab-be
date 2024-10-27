@@ -2,6 +2,7 @@ package com.cpplab.domain.auth.controller;
 
 
 import com.cpplab.domain.auth.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,12 +21,8 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @GetMapping("/my")
-    public String my() {
-        return "my";
-    }
-
     @PostMapping("/access")
+    @Operation(summary = "엑세스 토큰 발급", description = "로그인 성공 후 바로 작동")
     public ResponseEntity<?> access(HttpServletRequest request, HttpServletResponse response) {
 
         //get refresh token
