@@ -50,6 +50,7 @@ pipeline {
                     currentBuild.description = 'Push to ECR'
                     docker.withRegistry("https://${ECR_REPO}", "${ECR_CREDENTIALS_ID}") {
                         dockerImage.push("${DOCKER_TAG}")
+                        dockerImage.push("${latest}")
                     }
                 }
             }
