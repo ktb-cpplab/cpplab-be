@@ -10,7 +10,7 @@ pipeline {
         ECS_CLUSTER_NAME = 'cpplab-ecs-cluster'
         ECS_SERVICE_NAME = 'my-be-service'
         AWS_REGION = 'ap-northeast-2'
-        BRANCH_NAME = 'develop'
+        BRANCH_NAME = 'CLAB-53-Feat-Dockerfile-Jenkinsfile-be'
         DOCKER_TAG = "${env.BUILD_NUMBER}"  // Jenkins build number
         AWS_CREDENTIALS_ID = 'AWS_CREDENTIALS'
         APP_PROPERTIES = credentials('application-properties') // 추가: 시크릿 파일을 환경변수로 등록
