@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        REPO = 'github_id/repo_name'
+        REPO = 'ktb-cpplab/cpplab-be'
         ECR_REPO = '891612581533.dkr.ecr.ap-northeast-2.amazonaws.com/cpplab/be'
         ECR_CREDENTIALS_ID = 'ecr:ap-northeast-2:AWS_CREDENTIALS'
         GITHUB_CREDENTIALS_ID = 'github_token'
