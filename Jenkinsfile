@@ -13,7 +13,6 @@ pipeline {
         BRANCH_NAME = 'CLAB-53-Feat-Dockerfile-Jenkinsfile-be'
         DOCKER_TAG = "${env.BUILD_NUMBER}"  // Jenkins build number
         AWS_CREDENTIALS_ID = 'AWS_CREDENTIALS'
-        APP_PROPERTIES = credentials('application-properties') // 추가: 시크릿 파일을 환경변수로 등록
     }
 
     stages {
@@ -28,9 +27,8 @@ pipeline {
 
         stage('Prepare Application Properties') {
             steps {
-                script {
-                    currentBuild.description = 'Copying application.properties to workspace'
-                    writeFile file: 'application.properties', text: "${APP_PROPERTIES}"
+                withCredentials([file(credentialsId: 'application-properties', variable: 'SECRET_FILE')]) {
+                    sh "cp \$SECRET_FILE application.properties"
                 }
             }
         }
@@ -67,6 +65,12 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            sh "rm -f application.properties" // 보안을 위해 빌드 완료 후 삭제
         }
     }
 }

@@ -15,8 +15,8 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 COPY --from=builder /app/build/libs/cpplab-0.0.1-SNAPSHOT.jar app.jar
 
-# application.properties 파일 복사 
-COPY application.properties /app/application.properties
+# application.properties 파일을 config 폴더에 복사
+COPY application.properties /app/config/application.properties
 
 # 애플리케이션 포트 노출
 EXPOSE 8080
