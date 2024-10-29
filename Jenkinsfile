@@ -34,6 +34,7 @@ pipeline {
         }
         stage('Prepare .env File') {
             steps {
+                sh "chmod +w ."
                 withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
                     sh 'cp $ENV_FILE .env'
                 }
