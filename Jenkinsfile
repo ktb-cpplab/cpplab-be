@@ -26,11 +26,11 @@ pipeline {
             }
         }
 
-        stage('Prepare Application Properties') { // 추가: 프로퍼티 파일 준비 단계
+        stage('Prepare Application Properties') {
             steps {
                 script {
                     currentBuild.description = 'Copying application.properties to workspace'
-                    sh "echo '${APP_PROPERTIES}' > application.properties" // 시크릿 파일 내용을 application.properties로 복사
+                    writeFile file: 'application.properties', text: "${APP_PROPERTIES}"
                 }
             }
         }
