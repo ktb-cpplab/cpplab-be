@@ -44,7 +44,16 @@ pipeline {
             steps {
                 script {
                     currentBuild.description = 'Build Docker Image'
-                    dockerImage = docker.build("${ECR_REPO}:${DOCKER_TAG}", "--env-file .env .")
+
+                    // .env 파일에서 환경 변수를 읽어 빌드 컨텍스트에 로드
+                    def envVars = readFile('.env').readLines().collectEntries { line ->
+                        def parts = line.split('=')
+                        [(parts[0]): parts[1]]
+                    }
+
+                    // build-arg로 환경 변수 전달
+                    def buildArgs = envVars.collect { "--build-arg ${it.key}=${it.value}" }.join(' ')
+                    dockerImage = docker.build("${ECR_REPO}:${DOCKER_TAG}", "${buildArgs} .")
                 }
             }
         }
