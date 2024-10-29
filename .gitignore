@@ -65,3 +65,4 @@ out/
 **/*.properties
 **/*.yml
 **/*.yaml
+.env

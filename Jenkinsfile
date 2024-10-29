@@ -32,12 +32,19 @@ pipeline {
                 }
             }
         }
+        stage('Prepare .env File') {
+            steps {
+                withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
+                    sh 'cp $ENV_FILE .env'
+                }
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
                 script {
                     currentBuild.description = 'Build Docker Image'
-                    dockerImage = docker.build("${ECR_REPO}:${DOCKER_TAG}")
+                    dockerImage = docker.build("${ECR_REPO}:${DOCKER_TAG}", "--env-file .env .")
                 }
             }
         }
