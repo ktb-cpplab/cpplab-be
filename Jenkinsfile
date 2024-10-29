@@ -45,10 +45,10 @@ pipeline {
                 script {
                     currentBuild.description = 'Build Docker Image'
 
-                    // .env 파일에서 환경 변수를 읽어 빌드 컨텍스트에 로드
-                    def envVars = readFile('env').readLines().collectEntries { line ->
+                    // .env 파일을 읽어서, '=' 문자가 포함된 줄만 환경 변수로 로드
+                    def envVars = readFile('.env').readLines().findAll { line -> line.contains('=') }.collectEntries { line ->
                         def parts = line.split('=')
-                        [(parts[0]): parts[1]]
+                        [(parts[0].trim()): parts[1].trim()]
                     }
 
                     // build-arg로 환경 변수 전달
