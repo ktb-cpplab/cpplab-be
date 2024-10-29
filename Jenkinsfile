@@ -32,11 +32,10 @@ pipeline {
                 }
             }
         }
-        stage('Prepare .env File') {
+        stage('Prepare env File') {
             steps {
-                sh "chmod +w ."
                 withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
-                    sh 'cp $ENV_FILE .env'
+                    sh 'cp $ENV_FILE env'
                 }
             }
         }
@@ -47,7 +46,7 @@ pipeline {
                     currentBuild.description = 'Build Docker Image'
 
                     // .env 파일에서 환경 변수를 읽어 빌드 컨텍스트에 로드
-                    def envVars = readFile('.env').readLines().collectEntries { line ->
+                    def envVars = readFile('env').readLines().collectEntries { line ->
                         def parts = line.split('=')
                         [(parts[0]): parts[1]]
                     }
@@ -87,7 +86,7 @@ pipeline {
 
     post {
         always {
-            sh "rm -f application.properties" // 보안을 위해 빌드 완료 후 삭제
+            sh "rm -f application.properties env" // 보안을 위해 빌드 완료 후 삭제
         }
     }
 }
