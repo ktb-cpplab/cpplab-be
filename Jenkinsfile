@@ -32,21 +32,12 @@ pipeline {
                 }
             }
         }
-        stage('Prepare env File') {
-            steps {
-                withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
-                    sh 'cp $ENV_FILE env'
-                }
-            }
-        }
 
         stage('Build Docker Image') {
             steps {
                 script {
                     currentBuild.description = 'Build Docker Image'
-                    // env 파일의 모든 변수를 --build-arg로 변환하여 Docker 빌드에 전달
-                    def buildArgs = sh(script: "awk '{print \"--build-arg \" \$0}' env | xargs", returnStdout: true).trim()
-                    dockerImage = docker.build("${ECR_REPO}:${DOCKER_TAG}", "${buildArgs} .")
+                    dockerImage = docker.build("${ECR_REPO}:${DOCKER_TAG}")
                 }
             }
         }
@@ -79,7 +70,7 @@ pipeline {
 
     post {
         always {
-            sh "rm -f application.properties env" // 보안을 위해 빌드 완료 후 삭제
+            sh "rm -f application.properties" // 보안을 위해 빌드 완료 후 삭제
         }
     }
 }
