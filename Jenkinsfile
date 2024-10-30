@@ -27,8 +27,8 @@ pipeline {
 
         stage('Prepare Application Properties') {
             steps {
-                withCredentials([file(credentialsId: 'application-properties', variable: 'SECRET_FILE')]) {
-                    sh "cp \$SECRET_FILE application.properties"
+                withCredentials([file(credentialsId: 'application-properties', variable: 'PROPERTIES')]) {
+                    sh "cp \$PROPERTIES application.properties"
                 }
             }
         }
@@ -44,15 +44,8 @@ pipeline {
             steps {
                 script {
                     currentBuild.description = 'Build Docker Image'
-
-                    // .env 파일을 읽어서, '=' 문자가 포함된 줄만 환경 변수로 로드
-                    def envVars = readFile('.env').readLines().findAll { line -> line.contains('=') }.collectEntries { line ->
-                        def parts = line.split('=')
-                        [(parts[0].trim()): parts[1].trim()]
-                    }
-
-                    // build-arg로 환경 변수 전달
-                    def buildArgs = envVars.collect { "--build-arg ${it.key}=${it.value}" }.join(' ')
+                    // env 파일의 모든 변수를 --build-arg로 변환하여 Docker 빌드에 전달
+                    def buildArgs = sh(script: "awk '{print \"--build-arg \" \$0}' env | xargs", returnStdout: true).trim()
                     dockerImage = docker.build("${ECR_REPO}:${DOCKER_TAG}", "${buildArgs} .")
                 }
             }
