@@ -10,7 +10,7 @@ pipeline {
         ECS_CLUSTER_NAME = 'cpplab-ecs-cluster'
         ECS_SERVICE_NAME = 'my-be-service'
         AWS_REGION = 'ap-northeast-2'
-        BRANCH_NAME = 'CLAB-53-Feat-Dockerfile-Jenkinsfile-be'
+        BRANCH_NAME = "${env.GIT_BRANCH}"
         DOCKER_TAG = "${env.BUILD_NUMBER}"  // Jenkins build number
         AWS_CREDENTIALS_ID = 'AWS_CREDENTIALS'
     }
