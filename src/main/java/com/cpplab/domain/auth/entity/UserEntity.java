@@ -1,6 +1,5 @@
 package com.cpplab.domain.auth.entity;
 
-import com.cpplab.global.common.CreateEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
