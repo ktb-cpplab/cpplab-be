@@ -86,8 +86,8 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
             "/",
-            "/reissue", // 엑세스토큰 리프레시 토큰으로 재발급 경로
-            "/access", // 첫 로그인시, 엑세스 토큰 헤더 전달을 위한 경로
+            "api/v1/auth/reissue", // 엑세스토큰 리프레시 토큰으로 재발급 경로
+            "api/v1/auth/access", // 첫 로그인시, 엑세스 토큰 헤더 전달을 위한 경로
 
             // swagger
             "/v3/api-docs/**",
@@ -97,5 +97,4 @@ public class SecurityConfig {
             // 공통응답 테스트
             "/api/test/**"
     };
-
 }
