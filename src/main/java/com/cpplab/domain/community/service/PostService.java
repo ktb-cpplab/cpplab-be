@@ -67,7 +67,14 @@ public class PostService {
     // 게시글 조회
     public Page<PostEntity> getPosts(Pageable pageable) {
         return postRepository.findAll(pageable); // 페이징을 적용해 Post 데이터베이스에서 데이터를 가져옵니다.
+    }
 
+    //게시글 상세 조회
+    public PostEntity getPostDetail(Long postId) {
+        // 1. 게시글 존재 확인
+        PostEntity postEntity = postRepository.findById(postId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
+        return postEntity;
     }
 
     public PostEntity updatePost(String username, Long postId, PostRequest.PostPutDto request) {
@@ -108,12 +115,10 @@ public class PostService {
         // 1. 게시글 존재 확인
         PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
-        System.out.println("!!!!"+ username+postId+likeStatus);
         // 1. 본인이 좋아요 게시물에 대해서 삭제 및 생성
         // 2. true/false 여부에 따라서 게시물 총 조회수 값 (증가,감소) 여부 측정
         // 유저와 postId로 jpa로 바로 접근해서
         Optional<LikeEntity> existingLike = likeRepository.findByUserUserNameAndPostPostId(username, postId);
-        System.out.println("aa"+existingLike);
         if (likeStatus){
             if (existingLike.isEmpty()) { // null이라면
 
@@ -133,7 +138,7 @@ public class PostService {
             }
         } else if (!likeStatus) {
             // 4. likeStatus가 false인 경우
-            System.out.println("aaaa"+ username+postId+likeStatus);
+//            System.out.println("aaaa"+ username+postId+likeStatus);
             existingLike.ifPresent(like -> {
                 likeRepository.delete(like);
 
@@ -146,7 +151,6 @@ public class PostService {
             // 에러 처리
         }
     }
-
 
 
 }
