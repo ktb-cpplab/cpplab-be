@@ -1,12 +1,12 @@
 package com.cpplab.global.common;
 
-
 import com.cpplab.global.common.code.BaseCode;
 import com.cpplab.global.common.code.status.ErrorStatus;
 import com.cpplab.global.common.code.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,7 +16,7 @@ import lombok.Getter;
 public class ApiResponse<T> {
 
     @JsonProperty("isSuccess")
-    private final Boolean isSuccess;
+    private final Boolean isSuccess; // 생각해보기
     private final String code;
     private final String message;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -61,5 +61,3 @@ public class ApiResponse<T> {
                 SuccessStatus._NO_CONTENT.getMessage(), null);
     }
 }
-
-

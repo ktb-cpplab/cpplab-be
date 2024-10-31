@@ -1,6 +1,6 @@
 package com.cpplab.domain.auth.entity;
 
-import com.cpplab.global.common.CreateEntity;
+import com.cpplab.global.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,13 +11,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class UserEntity extends CreateEntity {
+public class UserEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    private Long userId;
 
-    private String username;
+    private String userName;
     private String name;
     private String email;
     private String role; // 추후: private Role role;

@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorStatus implements BaseErrorCode {
-
     // 기본 에러
     _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 에러, 관리자에게 문의 바랍니다."),
     _BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON400", "잘못된 요청입니다."),
@@ -21,6 +20,9 @@ public enum ErrorStatus implements BaseErrorCode {
     _LOGIN_USER_INVALID(HttpStatus.BAD_REQUEST, "USER401", "로그인 중 오류가 발생하였습니다."),
     _INVALID_USER(HttpStatus.BAD_REQUEST, "USER401" , "아이디 또는 비밀번호가 틀렸습니다."),
     _UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "USER401", "본인이 등록한 제품만 수정할 수 있습니다."),
+
+    // community 에러
+    _NOT_FOUND_POST(HttpStatus.NOT_FOUND, "POST400", "게시물이 존재하지 않습니다."),
 
     // Product 에러
     _NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND, "USER400", "제품이 존재하지 않습니다."),
@@ -41,7 +43,6 @@ public enum ErrorStatus implements BaseErrorCode {
     TOKEN_ORGANIZATION_NOT_FOND(HttpStatus.UNAUTHORIZED, "SEC4042", "존재하지 않는 단체입니다."),
     INTERNAL_SECURITY_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SEC5000", "인증 처리 중 서버 에러가 발생했습니다."),
     INTERNAL_TOKEN_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SEC5001", "토큰 처리 중 서버 에러가 발생했습니다.");
-
 
     private final HttpStatus httpStatus;
     private final String code;

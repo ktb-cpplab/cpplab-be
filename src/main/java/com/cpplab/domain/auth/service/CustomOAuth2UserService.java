@@ -10,6 +10,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
@@ -36,11 +38,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
-        UserEntity existData = userRepository.findByUsername(username);
+        Optional<UserEntity> existData = userRepository.findByUserName(username);
 
-        if (existData == null) {
+        if (existData.isPresent()){
+            UserEntity userEntity = existData.get(); // Optional에서 UserEntity 추출
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUsername(userEntity.getUserName());
+            userDTO.setName(userEntity.getName()); // 혹은 nickname
+            userDTO.setEmail(userEntity.getEmail());
+            userDTO.setRole(userEntity.getRole());
+            userDTO.setRole(userEntity.getRole());
+            return new CustomOAuth2User(userDTO);
+        }
+        else {
             UserEntity userEntity = new UserEntity();
-            userEntity.setUsername(username); // ex) kakao 3664463254
+            userEntity.setUserName(username); // ex) kakao 3664463254
             userEntity.setEmail(oAuth2Response.getEmail()); // ex) tiger1650@naver.com
             userEntity.setName(oAuth2Response.getName()); // ex) 이용우
             userEntity.setImage(oAuth2Response.getImage()); // ex) 프로필 이미지
@@ -54,18 +66,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userDTO.setRole("USER");
 
             return new CustomOAuth2User(userDTO);
-
         }
-        else{ // 이미 존재한다면
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(existData.getUsername());
-            userDTO.setName(existData.getName()); // 혹은 nickname
-            userDTO.setEmail(existData.getEmail());
-            userDTO.setRole(existData.getRole());
-            userDTO.setRole(existData.getRole());
-            return new CustomOAuth2User(userDTO);
-        }
-
     }
 
 }
