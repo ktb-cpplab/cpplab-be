@@ -17,11 +17,10 @@ public class PostEntity {
     private String title; // 제목
     private String content; // 내용
     private Long views; // 조회수
-    private Long likes; // 조회수
+    private Long likes; // 좋아요
 
 
     @ManyToOne // // 여러 개의 PostEntity가 하나의 UserEntity
     @JoinColumn(name = "userId")
     private UserEntity user;
-
 }

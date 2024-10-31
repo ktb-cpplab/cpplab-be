@@ -2,7 +2,6 @@ package com.cpplab.domain.community.controller;
 
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
 import com.cpplab.domain.community.dto.PostRequest;
-import com.cpplab.domain.community.dto.PostResponse;
 import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.community.service.PostService;
 import com.cpplab.global.common.ApiResponse;
@@ -11,11 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,6 +39,9 @@ public class PostController {
         return ApiResponse.onSuccess(postService.getPosts(pageable));
     }
 
+    // 게시글 디테일 조회
+
+
     // 게시글 수정, 본인 게시물만 수정 가능
     @PutMapping("/{postId}")
     public ApiResponse<PostEntity> updatePost(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable Long postId, @RequestBody PostRequest.PostPutDto request) {
@@ -51,10 +49,20 @@ public class PostController {
         return ApiResponse.onSuccess(updatedPost);
     }
 
+    // 게시글 삭제, 본인 게시물만 삭제 가능
+    @DeleteMapping("/{postId}")
+    public ApiResponse<String> deletePost(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable Long postId) {
+        postService.deletePost(customUser.getUsername(), postId);
+        return ApiResponse.onSuccess("게시물이 성공적으로 삭제되었습니다.");
+    }
 
-    // 게시글 삭제
     // 게시글 좋아요
-
+    @PostMapping("/{postId}/like/{likeStatus}")
+    public ApiResponse<String> likePost(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable Long postId, @PathVariable String likeStatus) {
+        System.out.println("@@@@"+ customUser.getUsername()+postId+likeStatus);
+        postService.likePost(customUser.getUsername(), postId, Boolean.parseBoolean(likeStatus));
+        return ApiResponse.onSuccess("게시글 좋아요를 눌렀습니다.");
+    }
 
 
 
