@@ -1,6 +1,7 @@
 package com.cpplab.domain.community.entity;
 
 import com.cpplab.domain.auth.entity.UserEntity;
+import com.cpplab.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +9,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class PostEntity {
+public class PostEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
