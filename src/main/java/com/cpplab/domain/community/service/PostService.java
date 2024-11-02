@@ -2,6 +2,10 @@ package com.cpplab.domain.community.service;
 
 import com.cpplab.domain.auth.entity.UserEntity;
 import com.cpplab.domain.auth.repository.UserRepository;
+import com.cpplab.domain.comment.dto.CommentResponse;
+import com.cpplab.domain.comment.entity.CommentEntity;
+import com.cpplab.domain.comment.repository.CommentRepository;
+import com.cpplab.domain.community.dto.DetailPostResponse;
 import com.cpplab.domain.community.dto.PostRequest;
 import com.cpplab.domain.community.dto.PostResponse;
 import com.cpplab.domain.community.entity.LikeEntity;
@@ -9,6 +13,7 @@ import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.community.repository.LikeRepository;
 import com.cpplab.domain.community.repository.PostRepository;
 import com.cpplab.global.common.code.status.ErrorStatus;
+import com.cpplab.global.common.enums.Rank;
 import com.cpplab.global.common.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +33,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
-
+    private final CommentRepository commentRepository;
 
 //    public PostResponse createPost(String userName, PostRequest.PostPutDto request) {
 //
@@ -68,10 +74,35 @@ public class PostService {
         return postRepository.findAll(pageable); // 페이징을 적용해 Post 데이터베이스에서 데이터를 가져옵니다.
     }
 
-    // 게시글 상세
-    public PostEntity getPostDetail(Long postId) {
-        return postRepository.findById(postId)
+    // 게시글 상세 조회
+//    @Transactional(readOnly = true)
+//    public DetailPostResponse getPostDetail(Long postId) {
+//        // 게시글 조회
+//        PostEntity postEntity = postRepository.findById(postId)
+//                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
+//
+//        // 댓글 조회 및 변환
+//        List<CommentResponse> comments = postEntity.getComments().stream()
+//                .map(CommentResponse::from)
+//                .collect(Collectors.toList());
+//
+//        // DetailPostResponse 생성 및 반환
+//        return new DetailPostResponse(postEntity, comments);
+//    }
+
+    @Transactional(readOnly = true)
+    public DetailPostResponse getPostDetail(Long postId) {
+        // 게시글 조회
+        PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
+
+        // 댓글 조회 및 변환
+        List<CommentResponse> comments = commentRepository.findByPost_PostId(postId).stream()
+                .map(CommentResponse::from)
+                .collect(Collectors.toList());
+
+        // DetailPostResponse 생성 및 반환
+        return new DetailPostResponse(postEntity, comments);
     }
 
     public PostEntity updatePost(Long userId, Long postId, PostRequest.PostPutDto request) {
@@ -103,6 +134,8 @@ public class PostService {
 
         // 3. 게시글 삭제
         postRepository.delete(deleteEntity);
+
+        // 댓글도 전부 삭제되는지 확인할 것.
     }
 
     public void likePost(Long userId, Long postId, boolean likeStatus){
@@ -149,6 +182,13 @@ public class PostService {
         }
     }
 
-
+//    public static CommentResponse from(CommentEntity comment) {
+//        return new CommentResponse(
+//                comment.getCommentId(),
+//                comment.getName(),
+//                comment.getContent(),
+//                comment.getRank()
+//        );
+//    }
 
 }

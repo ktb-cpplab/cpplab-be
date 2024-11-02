@@ -23,7 +23,7 @@ public class MyService {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
 
-        userEntity.setName(request.name()); // 새로운 닉네임 업데이트
+        userEntity.setNickName(request.nickName()); // 새로운 닉네임 업데이트
         userRepository.save(userEntity); // 변경사항 저장
         return userEntity;
     }

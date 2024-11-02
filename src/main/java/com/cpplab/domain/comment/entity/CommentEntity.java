@@ -19,7 +19,7 @@ public class CommentEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
-    private String name; // 소셜닉네임
+    private String nickName; // 소셜닉네임
     private String content; // 댓글내용
 
     @Enumerated(EnumType.STRING)
