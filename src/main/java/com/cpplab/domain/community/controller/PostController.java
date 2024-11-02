@@ -29,8 +29,8 @@ public class PostController {
     // 게시글 작성, 사용자 정보까지 반환
     @PostMapping("")
     public ApiResponse<PostEntity> createPost(@AuthenticationPrincipal CustomOAuth2User customUser, @RequestBody PostRequest.PostPutDto request){
-        PostEntity createEntity = postService.createPost(customUser.getUsername(), request);
-        return ApiResponse.onSuccess(createEntity);
+        PostEntity createPost = postService.createPost(customUser.getUsername(), request);
+        return ApiResponse.onSuccess(createPost);
     }
 
     // 게시글 조회(페이징)
