@@ -1,5 +1,6 @@
 package com.cpplab.domain.comment.entity;
 
+import com.cpplab.domain.auth.entity.UserEntity;
 import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.global.common.BaseEntity;
 import com.cpplab.global.common.enums.Rank;
@@ -24,6 +25,10 @@ public class CommentEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "userRank") // rank예약어가 있음
     private Rank rank; // 랭크
+
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name = "postId")

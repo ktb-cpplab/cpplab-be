@@ -33,7 +33,7 @@ public class KakaoResponse implements OAuth2Response{
     }
 
     @Override
-    public String getNickName() {
+    public String getname() {
         // "kakao_account" 필드에 포함된 "name" 값을 가져옵니다.
         Map<String, Object> kakaoAccount = (Map<String, Object>) attribute.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");

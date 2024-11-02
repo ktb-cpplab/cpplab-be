@@ -43,7 +43,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             UserEntity userEntity = new UserEntity();
             userEntity.setEmail(oAuth2Response.getEmail()); // ex) tiger1650@naver.com
             userEntity.setProvider(oAuth2Response.getProvider()); // KAKAO
-            userEntity.setNinkname(oAuth2Response.getNickName()); // ex) 이용우
+            userEntity.setName(oAuth2Response.getname()); // ex) 이용우
+            userEntity.setNickName(oAuth2Response.getname()); // ex) 이용우
             userEntity.setProfileImage(oAuth2Response.getProfileImage()); // ex) 프로필 이미지
 
             userRepository.save(userEntity);
@@ -51,14 +52,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             userDTO.setUserId(userEntity.getUserId());
             userDTO.setEmail(userEntity.getEmail());
-            userDTO.setNickName(userEntity.getNinkname());
+            userDTO.setName(userEntity.getName());
 
             return new CustomOAuth2User(userDTO);
         }
         else { // 이미 존재한다면
             UserDTO userDTO = new UserDTO();
             userDTO.setUserId(existData.getUserId());
-            userDTO.setNickName(existData.getNinkname());
+            userDTO.setName(existData.getName());
             userDTO.setEmail(existData.getEmail());
 
             return new CustomOAuth2User(userDTO);
