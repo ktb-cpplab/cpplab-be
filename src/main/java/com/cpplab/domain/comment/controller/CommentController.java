@@ -24,10 +24,25 @@ public class CommentController {
         return ApiResponse.onSuccess(createComment);
     }
 
-    // 댓글 수정
-//    @PutMapping("/{postId}/comment")
+    // 댓글 수정, 같은 메서드 실행
+    @PutMapping("/{postId}/comment/{commentId}")
+    public ApiResponse<CommentEntity> updateComment(@AuthenticationPrincipal CustomOAuth2User customUser,
+                                                    @PathVariable("postId") Long postId,
+                                                    @PathVariable("commentId") Long commentId,
+                                                    @RequestBody CommentRequest request){
+        CommentEntity updateComment = commentService.updateComment(customUser.getUsername(), postId, commentId, request);
+        return ApiResponse.onSuccess(updateComment);
+    }
 
     // 댓글 삭제
-//    @DeleteMapping("/{postId}/comment")
+    @DeleteMapping("/{postId}/comment/{commentId}")
+    public ApiResponse<String> deleteComment(@AuthenticationPrincipal CustomOAuth2User customUser,
+                                             @PathVariable("postId") Long postId,
+                                             @PathVariable("commentId") Long commentId){
+        CommentEntity deleteComment = commentService.deleteComment(customUser.getUsername(), postId, commentId);
+        return ApiResponse.onSuccess("댓글이 삭제되었습니다.");
+    }
+
+
 
 }
