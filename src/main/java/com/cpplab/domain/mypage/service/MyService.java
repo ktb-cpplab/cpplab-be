@@ -14,13 +14,13 @@ public class MyService {
 
     private final UserRepository userRepository;
 
-    public UserEntity getUserInfo(String username){
-        return userRepository.findByUserName(username)
+    public UserEntity getUserInfo(Long userId){
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
     }
 
-    public UserEntity putUserInfo(String username, UserInfoRequest request) {
-        UserEntity userEntity = userRepository.findByUserName(username)
+    public UserEntity putUserInfo(Long userId, UserInfoRequest request) {
+        UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
 
         userEntity.setName(request.name()); // 새로운 닉네임 업데이트

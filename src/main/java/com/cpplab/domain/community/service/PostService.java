@@ -66,7 +66,12 @@ public class PostService {
     // 게시글 조회
     public Page<PostEntity> getPosts(Pageable pageable) {
         return postRepository.findAll(pageable); // 페이징을 적용해 Post 데이터베이스에서 데이터를 가져옵니다.
+    }
 
+    // 게시글 상세
+    public PostEntity getPostDetail(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
     }
 
     public PostEntity updatePost(Long userId, Long postId, PostRequest.PostPutDto request) {

@@ -20,13 +20,13 @@ public class MyController {
     // 회원정보 조회
     @GetMapping("/my")
     public ApiResponse<UserEntity> getUserInfo(@AuthenticationPrincipal CustomOAuth2User customUser){
-        return ApiResponse.onSuccess(myService.getUserInfo(customUser.getUsername()));
+        return ApiResponse.onSuccess(myService.getUserInfo(customUser.getUserId()));
     }
 
     // 회원정보 수정
     @PutMapping("/my")
     public ApiResponse<UserEntity> putUserInfo(@AuthenticationPrincipal CustomOAuth2User customUser, @RequestBody UserInfoRequest request){
-        return ApiResponse.onSuccess(myService.putUserInfo(customUser.getUsername(), request));
+        return ApiResponse.onSuccess(myService.putUserInfo(customUser.getUserId(), request));
     }
 //
 //
