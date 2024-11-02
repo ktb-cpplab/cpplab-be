@@ -1,5 +1,7 @@
 package com.cpplab.domain.auth.dto;
 
+import com.cpplab.global.common.enums.Provider;
+
 import java.util.Map;
 
 public class KakaoResponse implements OAuth2Response{
@@ -11,8 +13,8 @@ public class KakaoResponse implements OAuth2Response{
     }
 
     @Override
-    public String getProvider() {
-        return "kakao";
+    public Provider getProvider() {
+        return Provider.KAKAO;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class KakaoResponse implements OAuth2Response{
     }
 
     @Override
-    public String getName() {
+    public String getname() {
         // "kakao_account" 필드에 포함된 "name" 값을 가져옵니다.
         Map<String, Object> kakaoAccount = (Map<String, Object>) attribute.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
@@ -39,7 +41,7 @@ public class KakaoResponse implements OAuth2Response{
     }
 
     @Override
-    public String getImage() {
+    public String getProfileImage() {
         Map<String, Object> kakaoAccount = (Map<String, Object>) attribute.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
         return profile.get("profile_image_url").toString();

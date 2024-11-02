@@ -8,6 +8,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,12 @@ import java.util.Date;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
+    @Value("${spring.jwt.token.access-expiration-time}")
+    private long accessTokenExpirationTime;
+
+    @Value("${spring.jwt.token.refresh-expiration-time}")
+    private long refreshTokenExpirationTime;
 
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
@@ -28,11 +35,10 @@ public class AuthService {
             return validationResponse; // 에러가 있을 경우 반환
         }
 
-        String username = jwtUtil.getUsername(refresh);
-        String role = jwtUtil.getRole(refresh);
+        Long userId = jwtUtil.getUserId(refresh);
 
         // 새로운 JWT 생성
-        String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
+        String newAccess = jwtUtil.createJwt("access", userId, accessTokenExpirationTime);
 
         // 응답 설정
         response.setHeader("access", newAccess);
@@ -47,16 +53,15 @@ public class AuthService {
             return validationResponse; // 에러가 있을 경우 반환
         }
 
-        String username = jwtUtil.getUsername(refresh);
-        String role = jwtUtil.getRole(refresh);
+        Long userId = jwtUtil.getUserId(refresh);
 
         // 새로운 JWT 생성
-        String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
-        String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
+        String newAccess = jwtUtil.createJwt("access", userId, accessTokenExpirationTime);
+        String newRefresh = jwtUtil.createJwt("refresh", userId, refreshTokenExpirationTime);
 
         // DB에서 기존의 Refresh 토큰 삭제 후 새로운 토큰 저장
         refreshRepository.deleteByRefresh(refresh);
-        addRefreshEntity(username, newRefresh, 86400000L);
+        addRefreshEntity(userId, newRefresh, refreshTokenExpirationTime);
 
         // 응답 설정
         response.setHeader("access", newAccess);
@@ -88,11 +93,11 @@ public class AuthService {
         return null; // 유효성 검사를 통과한 경우 null 반환
     }
 
-    private void addRefreshEntity(String username, String refresh, Long expiredMs) {
+    private void addRefreshEntity(Long userId, String refresh, Long expiredMs) {
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
         RefreshEntity refreshEntity = new RefreshEntity();
-        refreshEntity.setUserName(username);
+        refreshEntity.setUserId(userId);
         refreshEntity.setRefresh(refresh);
         refreshEntity.setExpiration(date.toString());
 
@@ -101,7 +106,7 @@ public class AuthService {
 
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24 * 60 * 60); // 24시간
+        cookie.setMaxAge((int)refreshTokenExpirationTime); // 24시간
         cookie.setHttpOnly(true);
         return cookie;
     }

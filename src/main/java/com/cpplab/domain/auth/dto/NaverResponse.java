@@ -1,5 +1,7 @@
 package com.cpplab.domain.auth.dto;
 
+import com.cpplab.global.common.enums.Provider;
+
 import java.util.Map;
 
 public class NaverResponse implements OAuth2Response{
@@ -11,8 +13,8 @@ public class NaverResponse implements OAuth2Response{
     }
 
     @Override
-    public String getProvider() {
-        return "naver";
+    public Provider getProvider() {
+        return Provider.NAVER;
     }
 
     @Override
@@ -26,12 +28,12 @@ public class NaverResponse implements OAuth2Response{
     }
 
     @Override
-    public String getName() {
+    public String getname() {
         return attribute.get("name").toString();
     }
 
     @Override
-    public String getImage() {
+    public String getProfileImage() {
         return attribute.get("profile_image").toString();
     }
 }

@@ -49,9 +49,8 @@ public class PostService {
 //    }
 
     // 게시글 작성
-    public PostEntity createPost(String userName, PostRequest.PostPutDto request) {
-
-        UserEntity user = userRepository.findByUserName(userName)
+    public PostEntity createPost(Long userId, PostRequest.PostPutDto request) {
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
 
         PostEntity post = new PostEntity();
@@ -70,14 +69,14 @@ public class PostService {
 
     }
 
-    public PostEntity updatePost(String username, Long postId, PostRequest.PostPutDto request) {
+    public PostEntity updatePost(Long userId, Long postId, PostRequest.PostPutDto request) {
 
         // 1. 게시글 존재 확인
         PostEntity updateEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
 
         // 2. 본인 게시물인지 확인
-        if (!updateEntity.getUser().getUserName().equals(username)) {
+        if (!updateEntity.getUser().getUserId().equals(userId)) {
             throw new GeneralException(ErrorStatus.FORBIDDEN);
         }
         // 제목과 내용 업데이트
@@ -88,13 +87,13 @@ public class PostService {
         return postRepository.save(updateEntity);
     }
 
-    public void deletePost(String username,Long postId) {
+    public void deletePost(Long userId,Long postId) {
         // 1. 게시글 존재 확인
         PostEntity deleteEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
 
         // 2. 본인 게시물인지 확인
-        if (!deleteEntity.getUser().getUserName().equals(username)) {
+        if (!deleteEntity.getUser().getUserId().equals(userId)) {
             throw new GeneralException(ErrorStatus.FORBIDDEN);
         }
 
@@ -102,23 +101,22 @@ public class PostService {
         postRepository.delete(deleteEntity);
     }
 
-    public void likePost(String username, Long postId, boolean likeStatus){
-
+    public void likePost(Long userId, Long postId, boolean likeStatus){
 
         // 1. 게시글 존재 확인
         PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
-        System.out.println("!!!!"+ username+postId+likeStatus);
+        System.out.println("!!!!"+ userId+postId+likeStatus);
         // 1. 본인이 좋아요 게시물에 대해서 삭제 및 생성
         // 2. true/false 여부에 따라서 게시물 총 조회수 값 (증가,감소) 여부 측정
         // 유저와 postId로 jpa로 바로 접근해서
-        Optional<LikeEntity> existingLike = likeRepository.findByUserUserNameAndPostPostId(username, postId);
+        Optional<LikeEntity> existingLike = likeRepository.findByUserUserIdAndPostPostId(userId, postId);
         System.out.println("aa"+existingLike);
         if (likeStatus){
             if (existingLike.isEmpty()) { // null이라면
 
                 // 2. 유저가 있는지 판단
-                UserEntity userEntity = userRepository.findByUserName(username)
+                UserEntity userEntity = userRepository.findById(userId)
                         .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
 
                 // 좋아요 엔티티 생성과 저장
@@ -133,7 +131,7 @@ public class PostService {
             }
         } else if (!likeStatus) {
             // 4. likeStatus가 false인 경우
-            System.out.println("aaaa"+ username+postId+likeStatus);
+            System.out.println("aaaa"+ userId+postId+likeStatus);
             existingLike.ifPresent(like -> {
                 likeRepository.delete(like);
 
