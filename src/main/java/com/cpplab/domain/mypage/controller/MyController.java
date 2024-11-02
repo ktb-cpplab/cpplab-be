@@ -2,7 +2,6 @@ package com.cpplab.domain.mypage.controller;
 
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
 import com.cpplab.domain.auth.entity.UserEntity;
-import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.mypage.dto.UserInfoRequest;
 import com.cpplab.domain.mypage.service.MyService;
 import com.cpplab.global.common.ApiResponse;
@@ -30,8 +29,10 @@ public class MyController {
     }
 //
 //
-//    // 나의 포트폴리오 조회
+    // 나의 포트폴리오 조회
 //    @GetMapping("/portfolio")
+
+
 //
 //    // 나의 포트폴리오 수정
 //    @PutMapping("/portfolio")
