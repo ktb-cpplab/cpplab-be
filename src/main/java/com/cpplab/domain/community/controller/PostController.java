@@ -40,7 +40,11 @@ public class PostController {
         return ApiResponse.onSuccess(postService.getPosts(pageable));
     }
 
-    // 게시글 디테일 조회
+    // 게시글 상세 조회
+    @GetMapping("/{postId}/detail")
+    public ApiResponse<PostEntity> getPostDetail(@PathVariable Long postId){
+        return ApiResponse.onSuccess(postService.getPostDetail(postId));
+    }
 
 
     // 게시글 수정, 본인 게시물만 수정 가능
