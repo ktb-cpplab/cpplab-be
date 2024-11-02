@@ -37,33 +37,29 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
-        String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
-        Optional<UserEntity> existData = userRepository.findByUserName(username);
+        UserEntity existData = userRepository.findByProviderAndEmail(oAuth2Response.getProvider(), oAuth2Response.getEmail());
 
-        if (existData.isPresent()){
-            UserEntity userEntity = existData.get(); // Optional에서 UserEntity 추출
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(userEntity.getUserName());
-            userDTO.setName(userEntity.getName()); // 혹은 nickname
-            userDTO.setEmail(userEntity.getEmail());
-            userDTO.setRole(userEntity.getRole());
-            userDTO.setRole(userEntity.getRole());
-            return new CustomOAuth2User(userDTO);
-        }
-        else {
+        if (existData == null){
             UserEntity userEntity = new UserEntity();
-            userEntity.setUserName(username); // ex) kakao 3664463254
             userEntity.setEmail(oAuth2Response.getEmail()); // ex) tiger1650@naver.com
-            userEntity.setName(oAuth2Response.getName()); // ex) 이용우
-            userEntity.setImage(oAuth2Response.getImage()); // ex) 프로필 이미지
-            userEntity.setRole("USER");
+            userEntity.setProvider(oAuth2Response.getProvider()); // KAKAO
+            userEntity.setNinkname(oAuth2Response.getNickName()); // ex) 이용우
+            userEntity.setProfileImage(oAuth2Response.getProfileImage()); // ex) 프로필 이미지
 
             userRepository.save(userEntity);
-
             UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(username);
-            userDTO.setName(oAuth2Response.getName());
-            userDTO.setRole("USER");
+
+            userDTO.setUserId(userEntity.getUserId());
+            userDTO.setEmail(userEntity.getEmail());
+            userDTO.setNickName(userEntity.getNinkname());
+
+            return new CustomOAuth2User(userDTO);
+        }
+        else { // 이미 존재한다면
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUserId(existData.getUserId());
+            userDTO.setNickName(existData.getNinkname());
+            userDTO.setEmail(existData.getEmail());
 
             return new CustomOAuth2User(userDTO);
         }

@@ -18,11 +18,11 @@ public class CommentController {
     private final CommentService commentService;
 
     // 댓글 작성
-    @PostMapping("/{postId}/comment")
-    public ApiResponse<CommentEntity> createComment(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable Long postId, @RequestBody CommentRequest request){
-        CommentEntity createComment = commentService.createComment(customUser.getUsername(), postId, request);
-        return ApiResponse.onSuccess(createComment);
-    }
+//    @PostMapping("/{postId}/comment")
+//    public ApiResponse<CommentEntity> createComment(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable Long postId, @RequestBody CommentRequest request){
+//        CommentEntity createComment = commentService.createComment(customUser.getUserId(), postId, request);
+//        return ApiResponse.onSuccess(createComment);
+//    }
 
     // 댓글 수정, 같은 메서드 실행
     @PutMapping("/{postId}/comment/{commentId}")
@@ -30,7 +30,7 @@ public class CommentController {
                                                     @PathVariable("postId") Long postId,
                                                     @PathVariable("commentId") Long commentId,
                                                     @RequestBody CommentRequest request){
-        CommentEntity updateComment = commentService.updateComment(customUser.getUsername(), postId, commentId, request);
+        CommentEntity updateComment = commentService.updateComment(customUser.getUserId(), postId, commentId, request);
         return ApiResponse.onSuccess(updateComment);
     }
 
@@ -39,7 +39,7 @@ public class CommentController {
     public ApiResponse<String> deleteComment(@AuthenticationPrincipal CustomOAuth2User customUser,
                                              @PathVariable("postId") Long postId,
                                              @PathVariable("commentId") Long commentId){
-        CommentEntity deleteComment = commentService.deleteComment(customUser.getUsername(), postId, commentId);
+//        CommentEntity deleteComment = commentService.deleteComment(customUser.getUserId(), postId, commentId);
         return ApiResponse.onSuccess("댓글이 삭제되었습니다.");
     }
 

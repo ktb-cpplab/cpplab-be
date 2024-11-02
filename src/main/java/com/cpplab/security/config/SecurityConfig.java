@@ -90,9 +90,6 @@ public class SecurityConfig {
             "api/v1/auth/access", // 첫 로그인시, 엑세스 토큰 헤더 전달을 위한 경로
             "/api/test/**",
 
-            // 커뮤니티
-            "/api/v1/post/all",
-
             // swagger
             "/v3/api-docs/**",
             "/swagger-ui/**",
