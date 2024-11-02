@@ -70,7 +70,6 @@ public class PostService {
     }
 
     public PostEntity updatePost(Long userId, Long postId, PostRequest.PostPutDto request) {
-
         // 1. 게시글 존재 확인
         PostEntity updateEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));

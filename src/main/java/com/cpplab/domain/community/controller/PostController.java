@@ -46,7 +46,6 @@ public class PostController {
         return ApiResponse.onSuccess(postService.getPostDetail(postId));
     }
 
-
     // 게시글 수정, 본인 게시물만 수정 가능
     @PutMapping("/{postId}")
     public ApiResponse<PostEntity> updatePost(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable Long postId, @RequestBody PostRequest.PostPutDto request) {
