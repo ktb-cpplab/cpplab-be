@@ -47,15 +47,15 @@ public class CommentService {
         if (!postRepository.existsById(postId)) {
             throw new GeneralException(ErrorStatus._NOT_FOUND_POST);
         }
-
         // 2. 본인 댓글인지 확인
-
-
+        else if (!userRepository.existsById(userId)) {
+            throw new GeneralException(ErrorStatus._NOT_FOUND_USER);
+        }
         // 3. 댓글 존재 확인
         CommentEntity updateComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_COMMENT));
 
-        // 내용 업데이트
+        // 4. 댓글 수정
         updateComment.setContent(request.content());
         return commentRepository.save(updateComment);
     }
@@ -65,15 +65,16 @@ public class CommentService {
         if (!postRepository.existsById(postId)) {
             throw new GeneralException(ErrorStatus._NOT_FOUND_POST);
         }
-
         // 2. 본인 댓글인지 확인
+        else if (!userRepository.existsById(userId)) {
+            throw new GeneralException(ErrorStatus._NOT_FOUND_USER);
+        }
 
-        // 2. 댓글 존재 여부 확인
+        // 3. 댓글 존재 여부 확인
         CommentEntity deleteComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_COMMENT));
 
         // 4. 댓글 삭제
         commentRepository.delete(deleteComment);
     }
-
 }

@@ -4,7 +4,6 @@ import com.cpplab.domain.auth.dto.CustomOAuth2User;
 import com.cpplab.domain.comment.dto.CommentRequest;
 import com.cpplab.domain.comment.entity.CommentEntity;
 import com.cpplab.domain.comment.service.CommentService;
-import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,7 +38,7 @@ public class CommentController {
     public ApiResponse<String> deleteComment(@AuthenticationPrincipal CustomOAuth2User customUser,
                                              @PathVariable("postId") Long postId,
                                              @PathVariable("commentId") Long commentId){
-//        CommentEntity deleteComment = commentService.deleteComment(customUser.getUserId(), postId, commentId);
+        commentService.deleteComment(customUser.getUserId(), postId, commentId);
         return ApiResponse.onSuccess("댓글이 삭제되었습니다.");
     }
 
