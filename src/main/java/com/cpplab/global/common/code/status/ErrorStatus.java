@@ -27,6 +27,9 @@ public enum ErrorStatus implements BaseErrorCode {
     // comment 에러
     _NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "COMMENT400", "댓글이 존재하지 않습니다."),
 
+    // portfolio 에러
+    _NOT_FOUND_PORTFOLIO(HttpStatus.NOT_FOUND, "PORTFOLIO400", "포트폴리오가 존재하지 않습니다."),
+
     // Product 에러
     _NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND, "USER400", "제품이 존재하지 않습니다."),
     _NOT_FOUND_PRODUCT_IN_CART(HttpStatus.NOT_FOUND, "USER400", "제품이 장바구니에 존재하지 않습니다."),

@@ -9,10 +9,16 @@ import com.cpplab.domain.mypage.entity.detail.EducationEntity;
 import com.cpplab.global.common.BaseEntity;
 import com.cpplab.global.common.enums.Rank;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PortfolioEntity extends BaseEntity {
 
     @Id
