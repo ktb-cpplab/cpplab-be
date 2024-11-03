@@ -2,23 +2,19 @@ package com.cpplab.domain.community.service;
 
 import com.cpplab.domain.auth.entity.UserEntity;
 import com.cpplab.domain.auth.repository.UserRepository;
-import com.cpplab.domain.comment.dto.CommentResponse;
-import com.cpplab.domain.comment.entity.CommentEntity;
+import com.cpplab.domain.comment.dto.AllCommentResponse;
 import com.cpplab.domain.comment.repository.CommentRepository;
 import com.cpplab.domain.community.dto.DetailPostResponse;
 import com.cpplab.domain.community.dto.PostRequest;
-import com.cpplab.domain.community.dto.PostResponse;
 import com.cpplab.domain.community.entity.LikeEntity;
 import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.community.repository.LikeRepository;
 import com.cpplab.domain.community.repository.PostRepository;
 import com.cpplab.global.common.code.status.ErrorStatus;
-import com.cpplab.global.common.enums.Rank;
 import com.cpplab.global.common.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,8 +93,8 @@ public class PostService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
 
         // 댓글 조회 및 변환
-        List<CommentResponse> comments = commentRepository.findByPost_PostId(postId).stream()
-                .map(CommentResponse::from)
+        List<AllCommentResponse> comments = commentRepository.findByPost_PostId(postId).stream()
+                .map(AllCommentResponse::from)
                 .collect(Collectors.toList());
 
         // DetailPostResponse 생성 및 반환

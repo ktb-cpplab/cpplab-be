@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface PortfolioRepository extends JpaRepository<PortfolioEntity, Long> {
     Optional<PortfolioEntity> findByUser(UserEntity userEntity);
     Optional<PortfolioEntity> findByUser_UserId(Long userId);
+
 }
