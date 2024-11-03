@@ -42,7 +42,7 @@ public enum ErrorStatus implements BaseErrorCode {
     // Security 에러
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "SEC4001", "잘못된 형식의 토큰입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "SEC4010", "인증이 필요합니다."),
-    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "SEC4011", "토큰이 만료되었습니다."),
+    TOKEN_EXPIRED(HttpStatus.INSUFFICIENT_SPACE_ON_RESOURCE, "SEC419", "토큰이 만료되었습니다."),
     TOKEN_SIGNATURE_ERROR(HttpStatus.UNAUTHORIZED, "SEC4012", "토큰이 위조되었거나 손상되었습니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "SEC4030", "권한이 없습니다."),
     TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "SEC4041", "토큰이 존재하지 않습니다."),
