@@ -2,6 +2,7 @@ package com.cpplab.domain.mypage.controller;
 
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
 import com.cpplab.domain.auth.entity.UserEntity;
+import com.cpplab.domain.mypage.dto.PortfolioRequest;
 import com.cpplab.domain.mypage.dto.UserInfoRequest;
 import com.cpplab.domain.mypage.entity.PortfolioEntity;
 import com.cpplab.domain.mypage.service.MyService;
@@ -38,7 +39,7 @@ public class MyController {
 
     // 나의 포트폴리오 수정, 추후 patch수정
     @PutMapping("/portfolio")
-    public ApiResponse<PortfolioEntity> putPortfolio(@AuthenticationPrincipal CustomOAuth2User customUser, @RequestBody PortfolioEntity request){
+    public ApiResponse<PortfolioEntity> putPortfolio(@AuthenticationPrincipal CustomOAuth2User customUser, @RequestBody PortfolioRequest request){
         return ApiResponse.onSuccess(myService.putPortfolio(customUser.getUserId(), request));
     }
 
