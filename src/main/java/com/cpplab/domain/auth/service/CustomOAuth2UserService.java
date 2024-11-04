@@ -4,6 +4,10 @@ package com.cpplab.domain.auth.service;
 import com.cpplab.domain.auth.dto.*;
 import com.cpplab.domain.auth.entity.UserEntity;
 import com.cpplab.domain.auth.repository.UserRepository;
+import com.cpplab.domain.mypage.entity.PortfolioEntity;
+import com.cpplab.domain.mypage.repository.PortfolioRepository;
+import com.cpplab.global.common.enums.Rank;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -13,14 +17,11 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
-
-    public CustomOAuth2UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
+    private final PortfolioRepository portfolioRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -48,8 +49,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userEntity.setProfileImage(oAuth2Response.getProfileImage()); // ex) 프로필 이미지
 
             userRepository.save(userEntity);
-            UserDTO userDTO = new UserDTO();
 
+            // PortfolioEntity 생성 및 기본값 설정
+            PortfolioEntity portfolioEntity = new PortfolioEntity();
+            portfolioEntity.setUser(userEntity);
+            portfolioEntity.setRank(Rank.NOT_EXIST); // 기본값으로 NOT_EXIST 설정
+
+            portfolioRepository.save(portfolioEntity);
+
+
+            UserDTO userDTO = new UserDTO();
             userDTO.setUserId(userEntity.getUserId());
             userDTO.setEmail(userEntity.getEmail());
             userDTO.setName(userEntity.getName());

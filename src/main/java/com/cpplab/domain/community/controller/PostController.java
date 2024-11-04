@@ -1,6 +1,7 @@
 package com.cpplab.domain.community.controller;
 
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
+import com.cpplab.domain.community.dto.DetailPostResponse;
 import com.cpplab.domain.community.dto.PostRequest;
 import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.community.service.PostService;
@@ -40,8 +41,11 @@ public class PostController {
         return ApiResponse.onSuccess(postService.getPosts(pageable));
     }
 
-    // 게시글 디테일 조회
-
+    // 게시글 상세 조회
+    @GetMapping("/{postId}/detail")
+    public ApiResponse<DetailPostResponse> getPostDetail(@PathVariable Long postId){
+        return ApiResponse.onSuccess(postService.getPostDetail(postId));
+    }
 
     // 게시글 수정, 본인 게시물만 수정 가능
     @PutMapping("/{postId}")

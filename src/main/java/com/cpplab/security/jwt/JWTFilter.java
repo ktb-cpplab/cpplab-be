@@ -3,8 +3,10 @@ package com.cpplab.security.jwt;
 
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
 import com.cpplab.domain.auth.dto.UserDTO;
+import com.cpplab.global.common.code.ErrorReasonDTO;
 import com.cpplab.global.common.code.status.ErrorStatus;
 import com.cpplab.global.common.exception.GeneralException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -49,15 +51,20 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
-//            throw new GeneralException(ErrorStatus.TOKEN_EXPIRED); // => 추후 리팩토링
 
-            //response body
-//            TOKEN_EXPIRED
-            PrintWriter writer = response.getWriter();
-            writer.print("access token expired");
+            ErrorReasonDTO errorResponse = ErrorStatus.TOKEN_EXPIRED.getReasonHttpStatus();
 
-            //response status code
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            // ErrorReasonDTO를 JSON 형식으로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+
+            // 응답 설정
+            response.setStatus(ErrorStatus.TOKEN_EXPIRED.getHttpStatus().value());
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            // JSON 응답 전송
+            response.getWriter().write(jsonResponse);
             return;
         }
 
