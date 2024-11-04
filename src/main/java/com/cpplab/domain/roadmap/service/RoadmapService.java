@@ -9,6 +9,7 @@ import com.cpplab.domain.roadmap.entity.RoadmapEntity;
 import com.cpplab.domain.roadmap.entity.StepEntity;
 import com.cpplab.domain.roadmap.entity.TaskEntity;
 import com.cpplab.domain.roadmap.repository.RoadmapRepository;
+import com.cpplab.domain.roadmap.repository.TaskRepository;
 import com.cpplab.global.common.code.status.ErrorStatus;
 import com.cpplab.global.common.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoadmapService {
 
-    private final RoadmapRepository roadmapRepository;
     private final UserRepository userRepository;
+    private final RoadmapRepository roadmapRepository;
+    private final TaskRepository taskRepository;
 
     public RoadmapEntity saveRoadmap(Long userId, RoadmapRequest roadmapRequest) {
         UserEntity user = userRepository.findById(userId)
@@ -77,5 +79,22 @@ public class RoadmapService {
 
         roadmapRepository.delete(roadmap);
     }
+
+    @Transactional
+    public Boolean stepCheck(Long userId, Long taskId) {
+        // taskId로 TaskEntity 조회
+        TaskEntity task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_TASK));
+
+        // 테스크의 유저인지 검사
+        if (task.getStep().getRoadmap().getUser().getUserId() != userId) {
+            throw new GeneralException(ErrorStatus._UNAUTHORIZED_ACCESS_TASK);
+        }
+        task.setCompleted(!task.isCompleted()); // 상태바꾸기
+        return task.isCompleted();
+    }
+
+
+
 
 }

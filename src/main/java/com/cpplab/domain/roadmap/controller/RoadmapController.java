@@ -38,17 +38,19 @@ public class RoadmapController {
         return ApiResponse.onSuccess(roadmapService.readRoadmap(customUser.getUserId()));
     }
 
-// 로드맵 삭제
+    // 로드맵 삭제
     @DeleteMapping("/{roadmapId}")
     public ApiResponse<String> deleteRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable("roadmapId") Long roadmapId) {
         roadmapService.deleteRoadmap(customUser.getUserId(), roadmapId);
         return  ApiResponse.onSuccess("로드맵이 성공적으로 삭제되었습니다");
     }
 
-
-
-// 로드맵 스탭에서 체크
-//    @PatchMapping("/{projectId}/{stepId}")
+    // 로드맵 스탭에서 체크
+    @PatchMapping("/{taskId}")
+    public ApiResponse<Boolean> stepCheck(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable("taskId") Long taskId) {
+        Boolean toggleStatus = roadmapService.stepCheck(customUser.getUserId(), taskId);
+        return ApiResponse.onSuccess(toggleStatus);
+    }
 
 
 }
