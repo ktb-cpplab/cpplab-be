@@ -62,7 +62,7 @@ public class RoadmapService {
         return roadmapRepository.save(roadmap);
     }
 
-    public List<RoadmapEntity> readRoadmap(Long userId) {
+    public List<RoadmapEntity> readAllRoadmap(Long userId) {
         // 유저가 존재하는지 검증
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
@@ -73,8 +73,17 @@ public class RoadmapService {
         if (roadmaps.isEmpty()) {
             throw new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP); // 로드맵이 없을 때 예외 처리
         }
-
         return roadmaps;
+    }
+
+    public RoadmapEntity readRoadmap(Long userId, Long roadmapId) {
+        RoadmapEntity roadmap = roadmapRepository.findById(roadmapId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP));
+
+        if (roadmap.getUser().getUserId() != userId) {
+            throw new GeneralException(ErrorStatus._UNAUTHORIZED_ACCESS_ROADMAP);
+        }
+        return roadmap;
     }
 
     @Transactional

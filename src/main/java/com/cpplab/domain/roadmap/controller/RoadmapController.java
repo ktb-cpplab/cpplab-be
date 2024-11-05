@@ -51,10 +51,16 @@ public class RoadmapController {
         return ApiResponse.onSuccess(lectures);
     }
 
-    // 로드맵 조회
+    // 로드맵 전체 조회
     @GetMapping("")
-    public ApiResponse<List<RoadmapEntity>> readRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser) {
-        return ApiResponse.onSuccess(roadmapService.readRoadmap(customUser.getUserId()));
+    public ApiResponse<List<RoadmapEntity>> readAllRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser) {
+        return ApiResponse.onSuccess(roadmapService.readAllRoadmap(customUser.getUserId()));
+    }
+
+    // 로드맵 조회
+    @GetMapping("/{roadmapId}")
+    public ApiResponse<RoadmapEntity> readRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable("roadmapId") Long roadmapId) {
+        return ApiResponse.onSuccess(roadmapService.readRoadmap(customUser.getUserId(), roadmapId));
     }
 
     // 로드맵 삭제
