@@ -124,9 +124,20 @@ public class PostService {
         if (!updateEntity.getUser().getUserId().equals(userId)) {
             throw new GeneralException(ErrorStatus.FORBIDDEN);
         }
+
         // 제목과 내용 업데이트
         updateEntity.setTitle(request.title());
         updateEntity.setContent(request.content());
+
+        // roadmapId가 존재하는 경우에만 설정
+        if (request.roadmapId() != null) {
+            RoadmapEntity roadmap = roadmapRepository.findById(request.roadmapId())
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP));
+
+            if (roadmap.getUser().getUserId() != userId)
+                throw new GeneralException(ErrorStatus._UNAUTHORIZED_ACCESS_ROADMAP);
+            updateEntity.setRoadmap(roadmap);
+        }
 
         // 변경 사항 저장
         return postRepository.save(updateEntity);
