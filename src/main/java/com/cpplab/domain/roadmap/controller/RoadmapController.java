@@ -23,12 +23,6 @@ public class RoadmapController {
     private final RoadmapService roadmapService;
     private final LectureRepository lectureRepository;
 
-//    @GetMapping("")
-//    public String save(){
-//        System.out.println("asdasd");
-//        return "string";
-//    }
-
     // 로드맵 저장, url만 반환
     @PostMapping("")
     public ApiResponse<List<LectureEntity>> saveRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser, @RequestBody RoadmapRequest roadmapRequest) {
@@ -76,6 +70,4 @@ public class RoadmapController {
         Boolean toggleStatus = roadmapService.stepCheck(customUser.getUserId(), taskId);
         return ApiResponse.onSuccess(toggleStatus);
     }
-
-
 }

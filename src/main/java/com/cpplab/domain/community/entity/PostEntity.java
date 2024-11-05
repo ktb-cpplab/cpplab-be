@@ -26,6 +26,6 @@ public class PostEntity extends BaseEntity {
     private UserEntity user;
 
     @OneToOne
-    @JoinColumn(name = "roadmapId", nullable = true)
+    @JoinColumn(name = "roadmapId", nullable = true) // null 허용
     private RoadmapEntity roadmap;
 }

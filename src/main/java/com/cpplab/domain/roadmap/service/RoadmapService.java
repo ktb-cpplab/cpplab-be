@@ -92,7 +92,7 @@ public class RoadmapService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP));
 
         if (roadmap.getUser().getUserId() != userId) {
-            throw new GeneralException(ErrorStatus._UNAUTHORIZED_ACCESS_ROADMAP);
+            throw new GeneralException(ErrorStatus._UNAUTHORIZED_DELETE_ROADMAP);
         }
 
         roadmapRepository.delete(roadmap);

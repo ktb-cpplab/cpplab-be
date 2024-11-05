@@ -30,7 +30,6 @@ public class PostController {
     // 게시글 작성, 사용자 정보까지 반환
     @PostMapping("")
     public ApiResponse<PostEntity> createPost(@AuthenticationPrincipal CustomOAuth2User customUser, @RequestBody PostRequest.PostPutDto request){
-        System.out.println(customUser.getUserId());
         PostEntity createPost = postService.createPost(customUser.getUserId(), request);
         return ApiResponse.onSuccess(createPost);
     }
@@ -64,7 +63,6 @@ public class PostController {
     // 게시글 좋아요
     @PostMapping("/{postId}/like/{likeStatus}")
     public ApiResponse<String> likePost(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable Long postId, @PathVariable String likeStatus) {
-        System.out.println("@@@@"+ customUser.getUserId()+postId+likeStatus);
         postService.likePost(customUser.getUserId(), postId, Boolean.parseBoolean(likeStatus));
         return ApiResponse.onSuccess("게시글 좋아요를 눌렀습니다.");
     }

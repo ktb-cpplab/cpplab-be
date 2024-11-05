@@ -32,7 +32,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // roadmap 에러
     _NOT_FOUND_ROADMAP(HttpStatus.NOT_FOUND, "ROADMAP400", "로드맵이 존재하지 않습니다."),
-    _UNAUTHORIZED_ACCESS_ROADMAP(HttpStatus.FORBIDDEN, "ROADMAP403", "로드맵을 삭제 할 권한이 없습니다."),
+    _UNAUTHORIZED_ACCESS_ROADMAP(HttpStatus.FORBIDDEN, "ROADMAP403", "로드맵을 접근 할 권한이 없습니다."),
+    _UNAUTHORIZED_DELETE_ROADMAP(HttpStatus.FORBIDDEN, "ROADMAP403", "로드맵을 삭제 할 권한이 없습니다."),
 
     // task 에러
     _NOT_FOUND_TASK(HttpStatus.NOT_FOUND, "TASK400", "테스크가 존재하지 않습니다."),

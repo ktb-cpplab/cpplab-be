@@ -10,6 +10,8 @@ import com.cpplab.domain.community.entity.LikeEntity;
 import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.community.repository.LikeRepository;
 import com.cpplab.domain.community.repository.PostRepository;
+import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
+import com.cpplab.domain.roadmap.repository.RoadmapRepository;
 import com.cpplab.global.common.code.status.ErrorStatus;
 import com.cpplab.global.common.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
+    private final RoadmapRepository roadmapRepository;
     private final CommentRepository commentRepository;
 
 //    public PostResponse createPost(String userName, PostRequest.PostPutDto request) {
@@ -62,6 +65,17 @@ public class PostService {
         post.setLikes(0L);
         post.setViews(0L);
 
+        //해당 유저의 로드맵인지도 확인해야함
+
+        // roadmapId가 존재하는 경우에만 설정
+        if (request.roadmapId() != null) {
+            RoadmapEntity roadmap = roadmapRepository.findById(request.roadmapId())
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP));
+
+            if (roadmap.getUser().getUserId() != userId)
+                throw new GeneralException(ErrorStatus._UNAUTHORIZED_ACCESS_ROADMAP);
+            post.setRoadmap(roadmap);
+        }
         return postRepository.save(post);
     }
 
@@ -139,7 +153,6 @@ public class PostService {
         // 1. 게시글 존재 확인
         PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
-        System.out.println("!!!!"+ userId+postId+likeStatus);
         // 1. 본인이 좋아요 게시물에 대해서 삭제 및 생성
         // 2. true/false 여부에 따라서 게시물 총 조회수 값 (증가,감소) 여부 측정
         // 유저와 postId로 jpa로 바로 접근해서
