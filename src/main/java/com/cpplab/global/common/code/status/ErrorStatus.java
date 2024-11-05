@@ -30,14 +30,13 @@ public enum ErrorStatus implements BaseErrorCode {
     // portfolio 에러
     _NOT_FOUND_PORTFOLIO(HttpStatus.NOT_FOUND, "PORTFOLIO400", "포트폴리오가 존재하지 않습니다."),
 
-    // Product 에러
-    _NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND, "USER400", "제품이 존재하지 않습니다."),
-    _NOT_FOUND_PRODUCT_IN_CART(HttpStatus.NOT_FOUND, "USER400", "제품이 장바구니에 존재하지 않습니다."),
-    _PRODUCT_IN_CART_CANNOT_DELETE(HttpStatus.BAD_REQUEST, "USER400", "장바구니에 담겨있는 상품은 삭제할 수 없습니다."),
+    // roadmap 에러
+    _NOT_FOUND_ROADMAP(HttpStatus.NOT_FOUND, "ROADMAP400", "로드맵이 존재하지 않습니다."),
+    _UNAUTHORIZED_ACCESS_ROADMAP(HttpStatus.FORBIDDEN, "ROADMAP403", "로드맵을 삭제 할 권한이 없습니다."),
 
-    // Cart 에러
-    _CART_IS_ALREADY_EMPTY(HttpStatus.BAD_REQUEST, "USER400", "장바구니가 이미 비어있습니다."),
-    _PRODUCT_ALREADY_IN_CART(HttpStatus.BAD_REQUEST, "USER400", "장바구니에 이미 해당상품이 존재합니다."),
+    // task 에러
+    _NOT_FOUND_TASK(HttpStatus.NOT_FOUND, "TASK400", "테스크가 존재하지 않습니다."),
+    _UNAUTHORIZED_ACCESS_TASK(HttpStatus.FORBIDDEN, "TASK403", "테스크 권한이 없습니다."),
 
     // Security 에러
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "SEC4001", "잘못된 형식의 토큰입니다."),
@@ -48,7 +47,18 @@ public enum ErrorStatus implements BaseErrorCode {
     TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "SEC4041", "토큰이 존재하지 않습니다."),
     TOKEN_ORGANIZATION_NOT_FOND(HttpStatus.UNAUTHORIZED, "SEC4042", "존재하지 않는 단체입니다."),
     INTERNAL_SECURITY_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SEC5000", "인증 처리 중 서버 에러가 발생했습니다."),
-    INTERNAL_TOKEN_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SEC5001", "토큰 처리 중 서버 에러가 발생했습니다.");
+    INTERNAL_TOKEN_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SEC5001", "토큰 처리 중 서버 에러가 발생했습니다."),
+
+
+    /////////////////// 골라골라 ///////////////////
+    // Product 에러
+    _NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND, "USER400", "제품이 존재하지 않습니다."),
+    _NOT_FOUND_PRODUCT_IN_CART(HttpStatus.NOT_FOUND, "USER400", "제품이 장바구니에 존재하지 않습니다."),
+    _PRODUCT_IN_CART_CANNOT_DELETE(HttpStatus.BAD_REQUEST, "USER400", "장바구니에 담겨있는 상품은 삭제할 수 없습니다."),
+
+    // Cart 에러
+    _CART_IS_ALREADY_EMPTY(HttpStatus.BAD_REQUEST, "USER400", "장바구니가 이미 비어있습니다."),
+    _PRODUCT_ALREADY_IN_CART(HttpStatus.BAD_REQUEST, "USER400", "장바구니에 이미 해당상품이 존재합니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

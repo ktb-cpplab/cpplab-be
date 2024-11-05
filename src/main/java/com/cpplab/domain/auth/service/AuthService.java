@@ -2,7 +2,11 @@ package com.cpplab.domain.auth.service;
 
 
 import com.cpplab.domain.auth.entity.RefreshEntity;
+import com.cpplab.domain.auth.entity.UserEntity;
 import com.cpplab.domain.auth.repository.RefreshRepository;
+import com.cpplab.domain.auth.repository.UserRepository;
+import com.cpplab.global.common.code.status.ErrorStatus;
+import com.cpplab.global.common.exception.GeneralException;
 import com.cpplab.security.jwt.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -14,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +33,7 @@ public class AuthService {
 
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
+    private final UserRepository userRepository;
 
     public ResponseEntity<?> reissueAccess(String refresh, HttpServletResponse response) {
 
@@ -36,14 +43,29 @@ public class AuthService {
         }
 
         Long userId = jwtUtil.getUserId(refresh);
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() ->  new GeneralException(ErrorStatus._NOT_FOUND_USER));
+
+        String nickName = user.getNickName();
 
         // 새로운 JWT 생성
         String newAccess = jwtUtil.createJwt("access", userId, accessTokenExpirationTime);
 
         // 응답 설정
+        // Set the access token in the response header
         response.setHeader("access", newAccess);
-        System.out.println(newAccess);
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        // Prepare custom response structure
+        Map<String, Object> result = new HashMap<>();
+        result.put("nickName", nickName);
+
+        // Return the response with the "result" structure
+        return new ResponseEntity<>(result, HttpStatus.OK);
+
+//        response.setHeader("access", newAccess);
+//
+//        System.out.println(newAccess);
+//        return new ResponseEntity<>(nickName, HttpStatus.OK);
     }
 
     public ResponseEntity<?> reissueTokens(String refresh, HttpServletResponse response) {

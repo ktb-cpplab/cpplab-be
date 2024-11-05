@@ -2,6 +2,9 @@ package com.cpplab.domain.auth.controller;
 
 
 import com.cpplab.domain.auth.service.AuthService;
+import com.cpplab.global.common.ApiResponse;
+import com.cpplab.global.common.code.status.ErrorStatus;
+import com.cpplab.global.common.exception.GeneralException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
@@ -23,7 +28,7 @@ public class AuthController {
 
     @PostMapping("/access")
     @Operation(summary = "엑세스 토큰 발급", description = "로그인 성공 후 바로 작동")
-    public ResponseEntity<?> access(HttpServletRequest request, HttpServletResponse response) {
+    public ApiResponse<Map<String, Object>> access(HttpServletRequest request, HttpServletResponse response) {
 
         //get refresh token
         String refresh = null;
@@ -34,10 +39,15 @@ public class AuthController {
             }
         }
         if (refresh == null) {
-            //response status code
-            return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
+            throw new GeneralException(ErrorStatus.TOKEN_NOT_FOUND);
         }
-        return authService.reissueAccess(refresh, response);
+
+        ResponseEntity<?> responseEntity = authService.reissueAccess(refresh, response);
+
+        // Wrap result in ApiResponse and return
+        Map<String, Object> result = (Map<String, Object>) responseEntity.getBody();
+        return ApiResponse.onSuccess(result);
+
     }
 
     @PostMapping("/reissue")
@@ -53,8 +63,7 @@ public class AuthController {
         }
 
         if (refresh == null) {
-            //response status code
-            return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
+            throw new GeneralException(ErrorStatus.TOKEN_NOT_FOUND);
         }
         return authService.reissueTokens(refresh, response);
     }
