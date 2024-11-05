@@ -100,11 +100,14 @@ public class PostService {
 //        return new DetailPostResponse(postEntity, comments);
 //    }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public DetailPostResponse getPostDetail(Long postId) {
         // 게시글 조회
         PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
+
+        postEntity.setViews(postEntity.getViews() + 1);
+        postRepository.save(postEntity); // 변경 사항 저장
 
         // 댓글 조회 및 변환
         List<AllCommentResponse> comments = commentRepository.findByPost_PostId(postId).stream()
