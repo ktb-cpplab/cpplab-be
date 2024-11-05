@@ -40,7 +40,7 @@ public class PostController {
         return ApiResponse.onSuccess(postService.getPosts(pageable));
     }
 
-    // 게시글 상세 조회
+    // 게시글 상세 조회, 조회수+1
     @GetMapping("/{postId}/detail")
     public ApiResponse<DetailPostResponse> getPostDetail(@PathVariable Long postId){
         return ApiResponse.onSuccess(postService.getPostDetail(postId));

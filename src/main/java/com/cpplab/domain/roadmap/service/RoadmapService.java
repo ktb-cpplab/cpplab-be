@@ -2,6 +2,8 @@ package com.cpplab.domain.roadmap.service;
 
 import com.cpplab.domain.auth.entity.UserEntity;
 import com.cpplab.domain.auth.repository.UserRepository;
+import com.cpplab.domain.community.entity.PostEntity;
+import com.cpplab.domain.community.repository.PostRepository;
 import com.cpplab.domain.roadmap.dto.AiUrlResponse;
 import com.cpplab.domain.roadmap.dto.RoadmapRequest;
 import com.cpplab.domain.roadmap.dto.StepRequest;
@@ -34,6 +36,7 @@ public class RoadmapService {
     private final UserRepository userRepository;
     private final RoadmapRepository roadmapRepository;
     private final TaskRepository taskRepository;
+    private final PostRepository postRepository;
 
     public RoadmapEntity saveRoadmap(Long userId, RoadmapRequest roadmapRequest) {
         UserEntity user = userRepository.findById(userId)
@@ -93,6 +96,13 @@ public class RoadmapService {
 
         if (roadmap.getUser().getUserId() != userId) {
             throw new GeneralException(ErrorStatus._UNAUTHORIZED_DELETE_ROADMAP);
+        }
+
+        // PostEntity에서 roadmap 참조를 null로 설정
+        List<PostEntity> postsWithRoadmap = postRepository.findByRoadmap(roadmap);
+        for (PostEntity post : postsWithRoadmap) {
+            post.setRoadmap(null); // roadmap 참조를 해제
+            postRepository.save(post); // 변경 사항 저장
         }
 
         roadmapRepository.delete(roadmap);
