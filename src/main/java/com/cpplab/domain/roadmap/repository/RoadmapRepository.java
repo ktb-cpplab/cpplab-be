@@ -1,8 +1,7 @@
 package com.cpplab.domain.roadmap.repository;
 
 import com.cpplab.domain.auth.entity.UserEntity;
-import com.cpplab.domain.mypage.entity.PortfolioEntity;
-import com.cpplab.domain.roadmap.entity.RoadmapEntity;
+import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

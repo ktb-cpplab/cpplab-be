@@ -1,4 +1,4 @@
-package com.cpplab.domain.roadmap.entity;
+package com.cpplab.domain.roadmap.entity.roadmap;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;

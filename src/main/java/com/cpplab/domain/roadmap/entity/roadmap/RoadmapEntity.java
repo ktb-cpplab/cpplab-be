@@ -1,4 +1,4 @@
-package com.cpplab.domain.roadmap.entity;
+package com.cpplab.domain.roadmap.entity.roadmap;
 
 import com.cpplab.domain.auth.entity.UserEntity;
 import com.cpplab.global.common.BaseEntity;

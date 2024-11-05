@@ -1,7 +1,7 @@
 package com.cpplab.domain.community.entity;
 
 import com.cpplab.domain.auth.entity.UserEntity;
-import com.cpplab.domain.roadmap.entity.RoadmapEntity;
+import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
 import com.cpplab.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
