@@ -1,6 +1,5 @@
-package com.cpplab.domain.roadmap.entity;
+package com.cpplab.domain.roadmap.entity.roadmap;
 
-import com.cpplab.domain.auth.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;

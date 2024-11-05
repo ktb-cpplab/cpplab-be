@@ -1,9 +1,11 @@
 package com.cpplab.domain.roadmap.controller;
 
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
-import com.cpplab.domain.mypage.service.MyService;
+import com.cpplab.domain.roadmap.dto.AiUrlResponse;
 import com.cpplab.domain.roadmap.dto.RoadmapRequest;
-import com.cpplab.domain.roadmap.entity.RoadmapEntity;
+import com.cpplab.domain.roadmap.entity.LectureEntity;
+import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
+import com.cpplab.domain.roadmap.repository.LectureRepository;
 import com.cpplab.domain.roadmap.service.RoadmapService;
 import com.cpplab.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +21,7 @@ import java.util.List;
 public class RoadmapController {
 
     private final RoadmapService roadmapService;
+    private final LectureRepository lectureRepository;
 
 //    @GetMapping("")
 //    public String save(){
@@ -25,12 +29,27 @@ public class RoadmapController {
 //        return "string";
 //    }
 
-    // 로드맵 저장
+    // 로드맵 저장, url만 반환
     @PostMapping("")
-    public ApiResponse<RoadmapEntity> saveRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser, @RequestBody RoadmapRequest roadmapRequest) {
-        return ApiResponse.onSuccess(roadmapService.saveRoadmap(customUser.getUserId(), roadmapRequest));
-    }
+    public ApiResponse<List<LectureEntity>> saveRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser, @RequestBody RoadmapRequest roadmapRequest) {
+        RoadmapEntity savedRoadmap = roadmapService.saveRoadmap(customUser.getUserId(), roadmapRequest);
 
+        // 2. AI 추천 API에 요청 보내기
+        List<AiUrlResponse> aiRecommendations = roadmapService.getRecommendations(roadmapRequest);
+
+        // 3. AI 추천 결과를 LectureEntity로 변환하여 DB에 저장
+        List<LectureEntity> lectures = aiRecommendations.stream()
+                .map(recommendation -> {
+                    LectureEntity lecture = new LectureEntity();
+                    lecture.setTitle(recommendation.getTitle());
+                    lecture.setUrl(recommendation.getUrl());
+                    lecture.setRoadmap(savedRoadmap); // 연관된 Roadmap 설정
+                    return lectureRepository.save(lecture); // LectureEntity 저장
+                })
+                .collect(Collectors.toList());
+
+        return ApiResponse.onSuccess(lectures);
+    }
 
     // 로드맵 조회
     @GetMapping("")

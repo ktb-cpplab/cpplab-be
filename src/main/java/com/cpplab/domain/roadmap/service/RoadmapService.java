@@ -2,26 +2,35 @@ package com.cpplab.domain.roadmap.service;
 
 import com.cpplab.domain.auth.entity.UserEntity;
 import com.cpplab.domain.auth.repository.UserRepository;
-import com.cpplab.domain.mypage.repository.PortfolioRepository;
+import com.cpplab.domain.roadmap.dto.AiUrlResponse;
 import com.cpplab.domain.roadmap.dto.RoadmapRequest;
 import com.cpplab.domain.roadmap.dto.StepRequest;
-import com.cpplab.domain.roadmap.entity.RoadmapEntity;
-import com.cpplab.domain.roadmap.entity.StepEntity;
-import com.cpplab.domain.roadmap.entity.TaskEntity;
+import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
+import com.cpplab.domain.roadmap.entity.roadmap.StepEntity;
+import com.cpplab.domain.roadmap.entity.roadmap.TaskEntity;
 import com.cpplab.domain.roadmap.repository.RoadmapRepository;
 import com.cpplab.domain.roadmap.repository.TaskRepository;
 import com.cpplab.global.common.code.status.ErrorStatus;
 import com.cpplab.global.common.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class RoadmapService {
 
+    @Value("${ai.api.url}")
+    private String aiAPiUrl;
+
+    private final RestTemplate restTemplate;
     private final UserRepository userRepository;
     private final RoadmapRepository roadmapRepository;
     private final TaskRepository taskRepository;
@@ -95,6 +104,20 @@ public class RoadmapService {
     }
 
 
+    public List<AiUrlResponse> getRecommendations(RoadmapRequest roadmapRequest) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<RoadmapRequest> requestEntity = new HttpEntity<>(roadmapRequest, headers);
+
+        ResponseEntity<AiUrlResponse[]> response = restTemplate.exchange(
+                aiAPiUrl + "/ai/recommend",
+                HttpMethod.POST,
+                requestEntity,
+                AiUrlResponse[].class
+        );
+        return List.of(response.getBody());
+    }
 
 
 }
