@@ -2,6 +2,7 @@ package com.cpplab.domain.roadmap.controller;
 
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
 import com.cpplab.domain.roadmap.dto.AiUrlResponse;
+import com.cpplab.domain.roadmap.dto.CustomAiUrlResponse;
 import com.cpplab.domain.roadmap.dto.RoadmapRequest;
 import com.cpplab.domain.roadmap.entity.LectureEntity;
 import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
@@ -30,6 +31,7 @@ public class RoadmapController {
 
         // 2. AI 추천 API에 요청 보내기
         List<AiUrlResponse> aiRecommendations = roadmapService.getRecommendations(roadmapRequest);
+//        List<AiUrlResponse> aiRecommendations = roadmapService.getRecommendations(roadmapRequest);
 
         // 3. AI 추천 결과를 LectureEntity로 변환하여 DB에 저장
         List<LectureEntity> lectures = aiRecommendations.stream()

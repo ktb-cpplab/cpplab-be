@@ -5,6 +5,7 @@ import com.cpplab.domain.auth.repository.UserRepository;
 import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.community.repository.PostRepository;
 import com.cpplab.domain.roadmap.dto.AiUrlResponse;
+import com.cpplab.domain.roadmap.dto.CustomAiUrlResponse;
 import com.cpplab.domain.roadmap.dto.RoadmapRequest;
 import com.cpplab.domain.roadmap.dto.StepRequest;
 import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
@@ -23,7 +24,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -122,21 +127,58 @@ public class RoadmapService {
         return task.isCompleted();
     }
 
-
     public List<AiUrlResponse> getRecommendations(RoadmapRequest roadmapRequest) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
 
         HttpEntity<RoadmapRequest> requestEntity = new HttpEntity<>(roadmapRequest, headers);
 
-        ResponseEntity<AiUrlResponse[]> response = restTemplate.exchange(
+        ResponseEntity<Map<String, Object>[]> response = restTemplate.exchange(
                 aiAPiUrl + "/ai/recommend",
                 HttpMethod.POST,
                 requestEntity,
-                AiUrlResponse[].class
+                (Class<Map<String, Object>[]>) (Class<?>) Map[].class
         );
-        return List.of(response.getBody());
+
+        // Map response to AiUrlResponse objects
+        return Arrays.stream(response.getBody())
+                .map(data -> {
+                    AiUrlResponse aiUrlResponse = new AiUrlResponse();
+                    aiUrlResponse.setTitle((String) data.get("title"));
+                    aiUrlResponse.setUrl((String) data.get("url"));
+                    return aiUrlResponse; // 인스턴스 aiUrlResponse를 반환
+                })
+                .collect(Collectors.toList());
+
     }
+
+//    public List<AiUrlResponse> getRecommendations(RoadmapRequest roadmapRequest) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set("Content-Type", "application/json");
+//
+//        HttpEntity<RoadmapRequest> requestEntity = new HttpEntity<>(roadmapRequest, headers);
+//
+//        ResponseEntity<Map<String, Object>[]> response = restTemplate.exchange(
+//                aiAPiUrl + "/ai/recommend",
+//                HttpMethod.POST,
+//                requestEntity,
+//                Map[].class
+//        );
+////        return List.of(response.getBody());
+//
+//        // Map response to CustomAiUrlResponse objects
+//        return Arrays.stream(response.getBody())
+//                .map(data -> {
+//                    AiUrlResponse aiUrlResponse = new AiUrlResponse();
+//                    aiUrlResponse.setHopeJob((String) data.get("hope_job"));
+//                    aiUrlResponse.setProjectLevel((String) data.get("project_level"));
+//                    aiUrlResponse.setProjectStack((List<String>) data.get("project_stack"));
+//                    aiUrlResponse.setProjectTitle((String) data.get("project_title"));
+//                    aiUrlResponse.setProjectDescription((String) data.get("project_description"));
+//                    return customResponse;
+//                })
+//                .collect(Collectors.toList());
+//    }
 
 
 }
