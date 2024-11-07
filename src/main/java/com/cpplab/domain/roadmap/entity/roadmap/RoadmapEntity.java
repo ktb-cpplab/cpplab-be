@@ -20,6 +20,8 @@ public class RoadmapEntity extends BaseEntity {
 
     private String title;
     private String description;
+    private String difficultyLevel; // 프로젝트 수준
+    private String projectSummary; // 프로젝트 요약
 
     @ElementCollection
     private List<String> techStacks; // 주 기술스택

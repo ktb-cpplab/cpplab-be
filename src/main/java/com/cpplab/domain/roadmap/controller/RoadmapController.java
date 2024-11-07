@@ -2,6 +2,7 @@ package com.cpplab.domain.roadmap.controller;
 
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
 import com.cpplab.domain.roadmap.dto.AiUrlResponse;
+import com.cpplab.domain.roadmap.dto.CustomAiUrlResponse;
 import com.cpplab.domain.roadmap.dto.RoadmapRequest;
 import com.cpplab.domain.roadmap.entity.LectureEntity;
 import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
@@ -23,12 +24,6 @@ public class RoadmapController {
     private final RoadmapService roadmapService;
     private final LectureRepository lectureRepository;
 
-//    @GetMapping("")
-//    public String save(){
-//        System.out.println("asdasd");
-//        return "string";
-//    }
-
     // 로드맵 저장, url만 반환
     @PostMapping("")
     public ApiResponse<List<LectureEntity>> saveRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser, @RequestBody RoadmapRequest roadmapRequest) {
@@ -36,6 +31,7 @@ public class RoadmapController {
 
         // 2. AI 추천 API에 요청 보내기
         List<AiUrlResponse> aiRecommendations = roadmapService.getRecommendations(roadmapRequest);
+//        List<AiUrlResponse> aiRecommendations = roadmapService.getRecommendations(roadmapRequest);
 
         // 3. AI 추천 결과를 LectureEntity로 변환하여 DB에 저장
         List<LectureEntity> lectures = aiRecommendations.stream()
@@ -51,10 +47,16 @@ public class RoadmapController {
         return ApiResponse.onSuccess(lectures);
     }
 
-    // 로드맵 조회
+    // 로드맵 전체 조회
     @GetMapping("")
-    public ApiResponse<List<RoadmapEntity>> readRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser) {
-        return ApiResponse.onSuccess(roadmapService.readRoadmap(customUser.getUserId()));
+    public ApiResponse<List<RoadmapEntity>> readAllRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser) {
+        return ApiResponse.onSuccess(roadmapService.readAllRoadmap(customUser.getUserId()));
+    }
+
+    // 로드맵 조회
+    @GetMapping("/{roadmapId}")
+    public ApiResponse<RoadmapEntity> readRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable("roadmapId") Long roadmapId) {
+        return ApiResponse.onSuccess(roadmapService.readRoadmap(customUser.getUserId(), roadmapId));
     }
 
     // 로드맵 삭제
@@ -70,6 +72,4 @@ public class RoadmapController {
         Boolean toggleStatus = roadmapService.stepCheck(customUser.getUserId(), taskId);
         return ApiResponse.onSuccess(toggleStatus);
     }
-
-
 }

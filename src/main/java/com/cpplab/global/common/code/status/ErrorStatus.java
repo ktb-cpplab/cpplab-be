@@ -16,26 +16,27 @@ public enum ErrorStatus implements BaseErrorCode {
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
     // User 에러
-    _NOT_FOUND_USER(HttpStatus.NOT_FOUND, "USER400", "사용자가 존재하지 않습니다."),
+    _NOT_FOUND_USER(HttpStatus.NOT_FOUND, "USER404", "사용자가 존재하지 않습니다."),
     _LOGIN_USER_INVALID(HttpStatus.BAD_REQUEST, "USER401", "로그인 중 오류가 발생하였습니다."),
     _INVALID_USER(HttpStatus.BAD_REQUEST, "USER401" , "아이디 또는 비밀번호가 틀렸습니다."),
     _UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "USER401", "본인이 등록한 제품만 수정할 수 있습니다."),
 
     // community 에러
-    _NOT_FOUND_POST(HttpStatus.NOT_FOUND, "POST400", "게시물이 존재하지 않습니다."),
+    _NOT_FOUND_POST(HttpStatus.NOT_FOUND, "POST404", "게시물이 존재하지 않습니다."),
 
     // comment 에러
-    _NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "COMMENT400", "댓글이 존재하지 않습니다."),
+    _NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "COMMENT404", "댓글이 존재하지 않습니다."),
 
     // portfolio 에러
-    _NOT_FOUND_PORTFOLIO(HttpStatus.NOT_FOUND, "PORTFOLIO400", "포트폴리오가 존재하지 않습니다."),
+    _NOT_FOUND_PORTFOLIO(HttpStatus.NOT_FOUND, "PORTFOLIO404", "포트폴리오가 존재하지 않습니다."),
 
     // roadmap 에러
-    _NOT_FOUND_ROADMAP(HttpStatus.NOT_FOUND, "ROADMAP400", "로드맵이 존재하지 않습니다."),
-    _UNAUTHORIZED_ACCESS_ROADMAP(HttpStatus.FORBIDDEN, "ROADMAP403", "로드맵을 삭제 할 권한이 없습니다."),
+    _NOT_FOUND_ROADMAP(HttpStatus.NOT_FOUND, "ROADMAP404", "로드맵이 존재하지 않습니다."),
+    _UNAUTHORIZED_ACCESS_ROADMAP(HttpStatus.FORBIDDEN, "ROADMAP403", "로드맵을 접근 할 권한이 없습니다."),
+    _UNAUTHORIZED_DELETE_ROADMAP(HttpStatus.FORBIDDEN, "ROADMAP403", "로드맵을 삭제 할 권한이 없습니다."),
 
     // task 에러
-    _NOT_FOUND_TASK(HttpStatus.NOT_FOUND, "TASK400", "테스크가 존재하지 않습니다."),
+    _NOT_FOUND_TASK(HttpStatus.NOT_FOUND, "TASK404", "테스크가 존재하지 않습니다."),
     _UNAUTHORIZED_ACCESS_TASK(HttpStatus.FORBIDDEN, "TASK403", "테스크 권한이 없습니다."),
 
     // Security 에러

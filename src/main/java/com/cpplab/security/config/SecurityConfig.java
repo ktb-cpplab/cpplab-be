@@ -3,6 +3,7 @@ package com.cpplab.security.config;
 
 import java.util.Collections;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,6 +31,9 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Value("${fe.url}")
+    private String feUrl;
+
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
@@ -45,7 +49,7 @@ public class SecurityConfig {
             public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                 CorsConfiguration configuration = new CorsConfiguration();
 
-                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                configuration.setAllowedOrigins(Collections.singletonList("http://"+feUrl+":3000"));
                 configuration.setAllowedMethods(Collections.singletonList("*"));
                 configuration.setAllowCredentials(true);
                 configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -91,6 +95,7 @@ public class SecurityConfig {
             "api/v1/auth/reissue", // 엑세스토큰 리프레시 토큰으로 재발급 경로
             "api/v1/auth/access", // 첫 로그인시, 엑세스 토큰 헤더 전달을 위한 경로
             "/api/test/**",
+            "/api/v1/health",
 
             // swagger
             "/v3/api-docs/**",

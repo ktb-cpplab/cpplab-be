@@ -2,7 +2,10 @@ package com.cpplab.domain.roadmap.service;
 
 import com.cpplab.domain.auth.entity.UserEntity;
 import com.cpplab.domain.auth.repository.UserRepository;
+import com.cpplab.domain.community.entity.PostEntity;
+import com.cpplab.domain.community.repository.PostRepository;
 import com.cpplab.domain.roadmap.dto.AiUrlResponse;
+import com.cpplab.domain.roadmap.dto.CustomAiUrlResponse;
 import com.cpplab.domain.roadmap.dto.RoadmapRequest;
 import com.cpplab.domain.roadmap.dto.StepRequest;
 import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
@@ -21,19 +24,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RoadmapService {
 
-    @Value("${ai.api.url}")
-    private String aiAPiUrl;
+    @Value("${ai.url}")
+    private String aiUrl;
 
     private final RestTemplate restTemplate;
     private final UserRepository userRepository;
     private final RoadmapRepository roadmapRepository;
     private final TaskRepository taskRepository;
+    private final PostRepository postRepository;
 
     public RoadmapEntity saveRoadmap(Long userId, RoadmapRequest roadmapRequest) {
         UserEntity user = userRepository.findById(userId)
@@ -62,7 +70,7 @@ public class RoadmapService {
         return roadmapRepository.save(roadmap);
     }
 
-    public List<RoadmapEntity> readRoadmap(Long userId) {
+    public List<RoadmapEntity> readAllRoadmap(Long userId) {
         // 유저가 존재하는지 검증
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
@@ -73,8 +81,17 @@ public class RoadmapService {
         if (roadmaps.isEmpty()) {
             throw new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP); // 로드맵이 없을 때 예외 처리
         }
-
         return roadmaps;
+    }
+
+    public RoadmapEntity readRoadmap(Long userId, Long roadmapId) {
+        RoadmapEntity roadmap = roadmapRepository.findById(roadmapId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP));
+
+        if (roadmap.getUser().getUserId() != userId) {
+            throw new GeneralException(ErrorStatus._UNAUTHORIZED_ACCESS_ROADMAP);
+        }
+        return roadmap;
     }
 
     @Transactional
@@ -83,7 +100,14 @@ public class RoadmapService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP));
 
         if (roadmap.getUser().getUserId() != userId) {
-            throw new GeneralException(ErrorStatus._UNAUTHORIZED_ACCESS_ROADMAP);
+            throw new GeneralException(ErrorStatus._UNAUTHORIZED_DELETE_ROADMAP);
+        }
+
+        // PostEntity에서 roadmap 참조를 null로 설정
+        List<PostEntity> postsWithRoadmap = postRepository.findByRoadmap(roadmap);
+        for (PostEntity post : postsWithRoadmap) {
+            post.setRoadmap(null); // roadmap 참조를 해제
+            postRepository.save(post); // 변경 사항 저장
         }
 
         roadmapRepository.delete(roadmap);
@@ -103,21 +127,58 @@ public class RoadmapService {
         return task.isCompleted();
     }
 
-
     public List<AiUrlResponse> getRecommendations(RoadmapRequest roadmapRequest) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
 
         HttpEntity<RoadmapRequest> requestEntity = new HttpEntity<>(roadmapRequest, headers);
 
-        ResponseEntity<AiUrlResponse[]> response = restTemplate.exchange(
-                aiAPiUrl + "/ai/recommend",
+        ResponseEntity<Map<String, Object>[]> response = restTemplate.exchange(
+                aiUrl + "/ai/recommend",
                 HttpMethod.POST,
                 requestEntity,
-                AiUrlResponse[].class
+                (Class<Map<String, Object>[]>) (Class<?>) Map[].class
         );
-        return List.of(response.getBody());
+
+        // Map response to AiUrlResponse objects
+        return Arrays.stream(response.getBody())
+                .map(data -> {
+                    AiUrlResponse aiUrlResponse = new AiUrlResponse();
+                    aiUrlResponse.setTitle((String) data.get("title"));
+                    aiUrlResponse.setUrl((String) data.get("url"));
+                    return aiUrlResponse; // 인스턴스 aiUrlResponse를 반환
+                })
+                .collect(Collectors.toList());
+
     }
+
+//    public List<AiUrlResponse> getRecommendations(RoadmapRequest roadmapRequest) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set("Content-Type", "application/json");
+//
+//        HttpEntity<RoadmapRequest> requestEntity = new HttpEntity<>(roadmapRequest, headers);
+//
+//        ResponseEntity<Map<String, Object>[]> response = restTemplate.exchange(
+//                aiAPiUrl + "/ai/recommend",
+//                HttpMethod.POST,
+//                requestEntity,
+//                Map[].class
+//        );
+////        return List.of(response.getBody());
+//
+//        // Map response to CustomAiUrlResponse objects
+//        return Arrays.stream(response.getBody())
+//                .map(data -> {
+//                    AiUrlResponse aiUrlResponse = new AiUrlResponse();
+//                    aiUrlResponse.setHopeJob((String) data.get("hope_job"));
+//                    aiUrlResponse.setProjectLevel((String) data.get("project_level"));
+//                    aiUrlResponse.setProjectStack((List<String>) data.get("project_stack"));
+//                    aiUrlResponse.setProjectTitle((String) data.get("project_title"));
+//                    aiUrlResponse.setProjectDescription((String) data.get("project_description"));
+//                    return customResponse;
+//                })
+//                .collect(Collectors.toList());
+//    }
 
 
 }

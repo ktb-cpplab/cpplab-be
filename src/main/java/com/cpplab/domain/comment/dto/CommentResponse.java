@@ -9,6 +9,7 @@ public record CommentResponse(
         Long commentId,
         String nickName,
         String content,
+        String profileImage,
         String rank,
         Long userId,
         Long postId,

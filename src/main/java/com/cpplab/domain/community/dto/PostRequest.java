@@ -12,6 +12,7 @@ public record PostRequest(
     @Builder
     public record PostPutDto(
             String title, // 제목
-            String content // 내용
+            String content, // 내용
+            Long roadmapId // 선택적 필드로 사용
     ){}
 }
