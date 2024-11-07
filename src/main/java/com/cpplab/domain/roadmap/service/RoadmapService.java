@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoadmapService {
 
-    @Value("${ai.api.url}")
-    private String aiAPiUrl;
+    @Value("${ai.url}")
+    private String aiUrl;
 
     private final RestTemplate restTemplate;
     private final UserRepository userRepository;
@@ -134,7 +134,7 @@ public class RoadmapService {
         HttpEntity<RoadmapRequest> requestEntity = new HttpEntity<>(roadmapRequest, headers);
 
         ResponseEntity<Map<String, Object>[]> response = restTemplate.exchange(
-                aiAPiUrl + "/ai/recommend",
+                aiUrl + "/ai/recommend",
                 HttpMethod.POST,
                 requestEntity,
                 (Class<Map<String, Object>[]>) (Class<?>) Map[].class
