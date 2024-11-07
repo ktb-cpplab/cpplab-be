@@ -35,7 +35,10 @@ public class AuthService {
     private final RefreshRepository refreshRepository;
     private final UserRepository userRepository;
 
-    public ResponseEntity<?> reissueAccess(String refresh, HttpServletResponse response) {
+//    ApiResponse<Map<String, Object>>
+//    public ApiResponse<Map<String, Object>> access(HttpServletRequest request, HttpServletResponse response) {
+
+        public ResponseEntity<?> reissueAccess(String refresh, HttpServletResponse response) {
 
         ResponseEntity<String> validationResponse = validateRefreshToken(refresh);
         if (validationResponse != null) {
