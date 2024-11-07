@@ -61,7 +61,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.setHeader("access", access); // 응답헤더에 엑세스 토큰
         response.addCookie(createCookie("refresh", refresh)); // 응답쿠키에 리프레시 토큰
         //response.setStatus(HttpStatus.OK.value()); 추후 exception 코드로 변경
-        response.sendRedirect("http://"+feUrl+":3000");
+        response.sendRedirect(feUrl);
     }
 
     private void addRefreshEntity(Long userId, String refresh, Long expiredMs) {
