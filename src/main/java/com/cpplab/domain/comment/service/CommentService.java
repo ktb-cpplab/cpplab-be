@@ -83,6 +83,7 @@ public class CommentService {
                 .rank(commentEntity.getRank().toString())
                 .userId(commentEntity.getUser().getUserId())
                 .postId(commentEntity.getPost().getPostId())
+                .profileImage(commentEntity.getUser().getProfileImage())
                 .createdAt(commentEntity.getCreatedAt())
                 .modifiedAt(commentEntity.getModifiedAt())
                 .build();
