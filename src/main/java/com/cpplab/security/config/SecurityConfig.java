@@ -95,6 +95,7 @@ public class SecurityConfig {
             "api/v1/auth/reissue", // 엑세스토큰 리프레시 토큰으로 재발급 경로
             "api/v1/auth/access", // 첫 로그인시, 엑세스 토큰 헤더 전달을 위한 경로
             "/api/test/**",
+            "/api/v1/health",
 
             // swagger
             "/v3/api-docs/**",
