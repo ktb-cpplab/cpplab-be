@@ -1,6 +1,7 @@
 package com.cpplab.domain.roadmap.controller;
 
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
+import com.cpplab.domain.roadmap.dto.AiUrlRequest;
 import com.cpplab.domain.roadmap.dto.AiUrlResponse;
 import com.cpplab.domain.roadmap.dto.CustomAiUrlResponse;
 import com.cpplab.domain.roadmap.dto.RoadmapRequest;
@@ -26,12 +27,11 @@ public class RoadmapController {
 
     // 로드맵 저장, url만 반환
     @PostMapping("")
-    public ApiResponse<List<LectureEntity>> saveRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser, @RequestBody RoadmapRequest roadmapRequest) {
+    public ApiResponse<List<AiUrlResponse>> saveRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser, @RequestBody RoadmapRequest roadmapRequest) {
         RoadmapEntity savedRoadmap = roadmapService.saveRoadmap(customUser.getUserId(), roadmapRequest);
 
         // 2. AI 추천 API에 요청 보내기
-        List<AiUrlResponse> aiRecommendations = roadmapService.getRecommendations(roadmapRequest);
-//        List<AiUrlResponse> aiRecommendations = roadmapService.getRecommendations(roadmapRequest);
+        List<AiUrlResponse> aiRecommendations = roadmapService.getRecommendations(customUser.getUserId(), roadmapRequest);
 
         // 3. AI 추천 결과를 LectureEntity로 변환하여 DB에 저장
         List<LectureEntity> lectures = aiRecommendations.stream()
@@ -44,7 +44,7 @@ public class RoadmapController {
                 })
                 .collect(Collectors.toList());
 
-        return ApiResponse.onSuccess(lectures);
+        return ApiResponse.onSuccess(aiRecommendations);
     }
 
     // 로드맵 전체 조회
@@ -67,9 +67,11 @@ public class RoadmapController {
     }
 
     // 로드맵 스탭에서 체크
-    @PatchMapping("/{taskId}")
-    public ApiResponse<Boolean> stepCheck(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable("taskId") Long taskId) {
-        Boolean toggleStatus = roadmapService.stepCheck(customUser.getUserId(), taskId);
+    @PatchMapping("/{roadmapId}/task/{taskId}")
+    public ApiResponse<Boolean> stepCheck(@AuthenticationPrincipal CustomOAuth2User customUser,
+                                          @PathVariable("roadmapId") Long roadmapId,
+                                          @PathVariable("taskId") Long taskId) {
+        Boolean toggleStatus = roadmapService.stepCheck(customUser.getUserId(), roadmapId, taskId);
         return ApiResponse.onSuccess(toggleStatus);
     }
 }

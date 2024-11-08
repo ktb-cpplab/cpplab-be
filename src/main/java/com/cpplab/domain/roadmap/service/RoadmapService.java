@@ -4,16 +4,16 @@ import com.cpplab.domain.auth.entity.UserEntity;
 import com.cpplab.domain.auth.repository.UserRepository;
 import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.community.repository.PostRepository;
-import com.cpplab.domain.roadmap.dto.AiUrlResponse;
-import com.cpplab.domain.roadmap.dto.CustomAiUrlResponse;
-import com.cpplab.domain.roadmap.dto.RoadmapRequest;
-import com.cpplab.domain.roadmap.dto.StepRequest;
+import com.cpplab.domain.mypage.entity.PortfolioEntity;
+import com.cpplab.domain.mypage.repository.PortfolioRepository;
+import com.cpplab.domain.roadmap.dto.*;
 import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
 import com.cpplab.domain.roadmap.entity.roadmap.StepEntity;
 import com.cpplab.domain.roadmap.entity.roadmap.TaskEntity;
 import com.cpplab.domain.roadmap.repository.RoadmapRepository;
 import com.cpplab.domain.roadmap.repository.TaskRepository;
 import com.cpplab.global.common.code.status.ErrorStatus;
+import com.cpplab.global.common.enums.Rank;
 import com.cpplab.global.common.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +43,7 @@ public class RoadmapService {
     private final RoadmapRepository roadmapRepository;
     private final TaskRepository taskRepository;
     private final PostRepository postRepository;
+    private final PortfolioRepository portfolioRepository;
 
     public RoadmapEntity saveRoadmap(Long userId, RoadmapRequest roadmapRequest) {
         UserEntity user = userRepository.findById(userId)
@@ -114,24 +116,35 @@ public class RoadmapService {
     }
 
     @Transactional
-    public Boolean stepCheck(Long userId, Long taskId) {
+    public Boolean stepCheck(Long userId, Long roadmapId ,Long taskId) {
         // taskId로 TaskEntity 조회
         TaskEntity task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_TASK));
 
-        // 테스크의 유저인지 검사
-        if (task.getStep().getRoadmap().getUser().getUserId() != userId) {
+        // 테스크의 유저인지 검사, 도메인 로직이 서비스 로직에 수정하기 getowner
+        if (task.getStep().getRoadmap().getUser().getUserId() != userId) { // equal 로 비교, 멘토님, task라는 객체를 정의해서 task안에서 메소드로 해석.
             throw new GeneralException(ErrorStatus._UNAUTHORIZED_ACCESS_TASK);
         }
         task.setCompleted(!task.isCompleted()); // 상태바꾸기
         return task.isCompleted();
     }
 
-    public List<AiUrlResponse> getRecommendations(RoadmapRequest roadmapRequest) {
+    public List<AiUrlResponse> getRecommendations(Long userId, RoadmapRequest roadmapRequest) {
+        PortfolioEntity portfolioEntity = portfolioRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_PORTFOLIO));
+
+        // 2. AiRecommendationRequest 객체 생성 (필요한 필드들을 추출)
+        AiUrlRequest aiRequest = new AiUrlRequest(
+                portfolioEntity.getHopeJob(),               // hopeJob 필드
+                roadmapRequest.techStacks(),             // techStacks 필드
+                roadmapRequest.difficultyLevel(),       // difficultyLevel 필드
+                roadmapRequest.title(),                  // projectTitle 필드
+                roadmapRequest.projectSummary()             // projectDescription 필드
+        );
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
-
-        HttpEntity<RoadmapRequest> requestEntity = new HttpEntity<>(roadmapRequest, headers);
+        HttpEntity<AiUrlRequest> requestEntity = new HttpEntity<>(aiRequest, headers);
 
         ResponseEntity<Map<String, Object>[]> response = restTemplate.exchange(
                 aiUrl + "/ai/recommend",

@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class JWTFilter extends OncePerRequestFilter {
+public class   JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
 

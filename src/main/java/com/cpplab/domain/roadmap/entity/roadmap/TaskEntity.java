@@ -21,4 +21,6 @@ public class TaskEntity {
     @JoinColumn(name = "stepId")
     @JsonBackReference // 직렬화 방어
     private StepEntity step;
+
+    // 엔티티 내부에서 체인된 겟을 해결하자
 }
