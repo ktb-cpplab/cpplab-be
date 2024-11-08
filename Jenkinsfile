@@ -69,6 +69,41 @@ pipeline {
     }
 
     post {
+        success {
+            withCredentials([string(credentialsId: 'Discord-Backend-Webhook', variable: 'DISCORD')]) {
+                        discordSend description: """
+                        제목 : ${currentBuild.displayName}
+                        결과 : ${currentBuild.result}
+                        실행 시간 : ${currentBuild.duration / 1000}s
+                        """,
+                        link: env.BUILD_URL, result: currentBuild.currentResult,
+                        title: "${env.JOB_NAME} : ${currentBuild.displayName} 성공",
+                        webhookURL: "$DISCORD"
+            }
+        }
+        failure {
+            script {
+                def failedStage = ''
+                def causes = currentBuild.rawBuild.getAction(hudson.model.ExecutorAction)?.getCauses() ?: []
+                if (causes) {
+                    failedStage = causes.collect { it.shortDescription }.join(", ")
+                } else {
+                    failedStage = "Unknown stage"
+                }
+
+                withCredentials([string(credentialsId: 'Discord-Backend-Webhook', variable: 'DISCORD')]) {
+                    discordSend description: """
+                    제목 : ${currentBuild.displayName}
+                    결과 : ${currentBuild.result}
+                    실패한 단계 : ${failedStage}
+                    실행 시간 : ${currentBuild.duration / 1000}s
+                    """,
+                    link: env.BUILD_URL, result: currentBuild.currentResult,
+                    title: "${env.JOB_NAME} : ${currentBuild.displayName} 실패",
+                    webhookURL: "$DISCORD"
+                }
+            }
+        }
         always {
             sh "rm -f application.properties" // 보안을 위해 빌드 완료 후 삭제
         }
