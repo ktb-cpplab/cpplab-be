@@ -80,9 +80,10 @@ public class RoadmapService {
         // 유저의 로드맵을 조회
         List<RoadmapEntity> roadmaps = roadmapRepository.findByUser(user);
 
-        if (roadmaps.isEmpty()) {
-            throw new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP); // 로드맵이 없을 때 예외 처리
-        }
+// 없어도 null로 성공으로 넘기기로
+//        if (roadmaps.isEmpty()) {
+//            throw new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP); // 로드맵이 없을 때 예외 처리
+//        }
         return roadmaps;
     }
 
