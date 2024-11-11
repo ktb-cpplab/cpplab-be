@@ -1,5 +1,5 @@
 # Gradle 빌드를 위한 베이스 이미지
-FROM gradle:7.5-jdk21 AS builder
+FROM openjdk:21-jdk-slim AS builder
 
 # 소스 복사 및 작업 디렉토리 설정
 WORKDIR /app
@@ -9,7 +9,7 @@ COPY . /app
 RUN gradle build -x test
 
 # 실행을 위한 새로운 베이스 이미지
-FROM openjdk:17-jdk-slim
+FROM openjdk:21-jdk-slim
 
 # 빌드된 JAR 파일 복사
 WORKDIR /app
