@@ -1,6 +1,14 @@
 # Gradle 빌드를 위한 베이스 이미지
 FROM openjdk:21-jdk-slim AS builder
 
+# Gradle 설치
+RUN apt-get update && \
+    apt-get install -y curl unzip && \
+    curl -s https://downloads.gradle-dn.com/distributions/gradle-7.5-bin.zip -o gradle.zip && \
+    unzip gradle.zip -d /opt && \
+    rm gradle.zip && \
+    ln -s /opt/gradle-7.5/bin/gradle /usr/bin/gradle
+
 # 소스 복사 및 작업 디렉토리 설정
 WORKDIR /app
 COPY . /app
