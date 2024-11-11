@@ -84,7 +84,7 @@ public class SecurityConfig {
         http.sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
 
         // HTTPS 요청 요구
-//        http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
+        http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
 //        http.requiresChannel(channel ->
 //                channel.antMatchers("/login*").requiresSecure()
 //        );
