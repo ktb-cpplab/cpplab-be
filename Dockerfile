@@ -1,5 +1,5 @@
 # Gradle 빌드를 위한 베이스 이미지
-FROM gradle:7.5-jdk17 AS builder
+FROM gradle:7.5-jdk21 AS builder
 
 # 소스 복사 및 작업 디렉토리 설정
 WORKDIR /app
