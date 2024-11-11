@@ -1,5 +1,13 @@
-# Gradle 빌드를 위한 베이스 이미지
-FROM gradle:7.5-jdk21 AS builder
+# Java 21 베이스 이미지로 시작하여 Gradle 설치
+FROM openjdk:21-jdk-slim AS builder
+
+# Gradle 설치
+RUN apt-get update && \
+    apt-get install -y curl unzip && \
+    curl -sSL https://downloads.gradle-dn.com/distributions/gradle-7.5-bin.zip -o gradle.zip && \
+    unzip gradle.zip -d /opt && \
+    rm gradle.zip && \
+    ln -s /opt/gradle-7.5/bin/gradle /usr/bin/gradle
 
 # 소스 복사 및 작업 디렉토리 설정
 WORKDIR /app
@@ -8,7 +16,7 @@ COPY . /app
 # Gradle 빌드 실행 (테스트 제외)
 RUN gradle build -x test
 
-# 실행을 위한 새로운 베이스 이미지
+# 실행을 위한 새로운 Java 21 베이스 이미지
 FROM openjdk:21-jdk-slim
 
 # 빌드된 JAR 파일 복사
