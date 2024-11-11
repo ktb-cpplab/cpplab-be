@@ -9,6 +9,12 @@ FROM openjdk:21-jdk-slim AS builder
 #     rm gradle.zip && \
 #     ln -s /opt/gradle-7.5/bin/gradle /usr/bin/gradle
 
+RUN apt-get update && \
+    apt-get install -y curl unzip && \
+    curl -sSL https://services.gradle.org/distributions/gradle-7.5-bin.zip -o gradle.zip && \
+    unzip gradle.zip -d /opt && \
+    rm gradle.zip && \
+    ln -s /opt/gradle-7.5/bin/gradle /usr/bin/gradle
 # 소스 복사 및 작업 디렉토리 설정
 WORKDIR /app
 COPY . /app
@@ -19,9 +25,9 @@ COPY . /app
 # 실행을 위한 새로운 Java 21 베이스 이미지
 FROM openjdk:21-jdk-slim
 
-# # 빌드된 JAR 파일 복사
-# WORKDIR /app
-# COPY --from=builder /app/build/libs/cpplab-0.0.1-SNAPSHOT.jar app.jar
+# 빌드된 JAR 파일 복사
+WORKDIR /app
+COPY --from=builder /app/build/libs/cpplab-0.0.1-SNAPSHOT.jar app.jar
 
 # application.properties 파일을 config 폴더에 복사
 COPY application.properties /app/config/application.properties
