@@ -7,7 +7,7 @@ RUN apt-get update
 WORKDIR /app
 COPY . /app
 
-RUN chmod +x gradlew
+RUN chmod +x ./gradlew
 # 빌드 방식 다르다면 바꾸기
 RUN ./gradlew clean build -x test
 
