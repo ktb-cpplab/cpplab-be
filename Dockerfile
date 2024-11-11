@@ -2,6 +2,7 @@
 FROM openjdk:21-jdk-slim AS builder
 
 RUN apt-get update 
+RUN apt-get install -y curl unzip
 
 # 소스 복사 및 작업 디렉토리 설정
 WORKDIR /app
