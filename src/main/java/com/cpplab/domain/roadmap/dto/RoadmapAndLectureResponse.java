@@ -12,8 +12,10 @@ public record RoadmapAndLectureResponse(
         String description,
         String difficultyLevel, // 프로젝트 수준
         String projectSummary, // 프로젝트 요약
+        List<String> techStacks, // 주 기술스택
         List<StepEntity> steps,
         List<LectureResponse> lectures
+
 ) {
     public record LectureResponse(Long lectureId, String title, String url) {}
 }

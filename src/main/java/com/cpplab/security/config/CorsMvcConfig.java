@@ -16,7 +16,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 
         corsRegistry.addMapping("/**")
                 .exposedHeaders("Set-Cookie")
-//                .allowCredentials(true)
+                .allowCredentials(true)
 //                .allowedMethods("*")
 //                .allowedHeaders("*")
                 .allowedOrigins(feUrl);
