@@ -8,8 +8,6 @@ RUN apt-get install -y curl unzip
 WORKDIR /app
 COPY . /app
 
-# Gradle Wrapper 생성 및 실행 권한 부여
-RUN gradle wrapper
 RUN chmod +x ./gradlew
 # 빌드 방식 다르다면 바꾸기
 RUN ./gradlew clean build -x test
