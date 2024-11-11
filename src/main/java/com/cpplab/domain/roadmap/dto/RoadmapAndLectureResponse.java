@@ -1,0 +1,19 @@
+package com.cpplab.domain.roadmap.dto;
+
+import com.cpplab.domain.roadmap.entity.roadmap.StepEntity;
+import lombok.Builder;
+
+import java.util.List;
+
+@Builder
+public record RoadmapAndLectureResponse(
+        Long roadmapId,
+        String title,
+        String description,
+        String difficultyLevel, // 프로젝트 수준
+        String projectSummary, // 프로젝트 요약
+        List<StepEntity> steps,
+        List<LectureResponse> lectures
+) {
+    public record LectureResponse(Long lectureId, String title, String url) {}
+}

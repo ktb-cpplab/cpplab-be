@@ -10,10 +10,11 @@ import com.cpplab.domain.roadmap.dto.*;
 import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
 import com.cpplab.domain.roadmap.entity.roadmap.StepEntity;
 import com.cpplab.domain.roadmap.entity.roadmap.TaskEntity;
+import com.cpplab.domain.roadmap.mapper.RoadmapMapper;
+import com.cpplab.domain.roadmap.repository.LectureRepository;
 import com.cpplab.domain.roadmap.repository.RoadmapRepository;
 import com.cpplab.domain.roadmap.repository.TaskRepository;
 import com.cpplab.global.common.code.status.ErrorStatus;
-import com.cpplab.global.common.enums.Rank;
 import com.cpplab.global.common.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +29,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +44,7 @@ public class RoadmapService {
     private final TaskRepository taskRepository;
     private final PostRepository postRepository;
     private final PortfolioRepository portfolioRepository;
+    private final RoadmapMapper roadmapMapper;
 
     public RoadmapEntity saveRoadmap(Long userId, RoadmapRequest roadmapRequest) {
         UserEntity user = userRepository.findById(userId)
@@ -53,6 +54,8 @@ public class RoadmapService {
         roadmap.setTitle(roadmapRequest.title());
         roadmap.setDescription(roadmapRequest.description());
         roadmap.setTechStacks(roadmapRequest.techStacks());
+        roadmap.setDifficultyLevel(roadmapRequest.difficultyLevel());
+        roadmap.setProjectSummary(roadmapRequest.projectSummary());
         roadmap.setUser(user);
 
         for (StepRequest stepRequest : roadmapRequest.steps()) {
@@ -72,7 +75,7 @@ public class RoadmapService {
         return roadmapRepository.save(roadmap);
     }
 
-    public List<RoadmapEntity> readAllRoadmap(Long userId) {
+    public List<RoadmapAndLectureResponse> readAllRoadmap(Long userId) {
         // 유저가 존재하는지 검증
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
@@ -80,20 +83,45 @@ public class RoadmapService {
         // 유저의 로드맵을 조회
         List<RoadmapEntity> roadmaps = roadmapRepository.findByUser(user);
 
-        if (roadmaps.isEmpty()) {
-            throw new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP); // 로드맵이 없을 때 예외 처리
-        }
-        return roadmaps;
+// 없어도 null로 성공으로 넘기기로
+//        if (roadmaps.isEmpty()) {
+//            throw new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP); // 로드맵이 없을 때 예외 처리
+//        }
+//        return roadmaps;
+
+        return roadmaps.stream()
+                .map(roadmapMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public RoadmapEntity readRoadmap(Long userId, Long roadmapId) {
+    public RoadmapAndLectureResponse readRoadmap(Long userId, Long roadmapId) {
         RoadmapEntity roadmap = roadmapRepository.findById(roadmapId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP));
 
         if (roadmap.getUser().getUserId() != userId) {
             throw new GeneralException(ErrorStatus._UNAUTHORIZED_ACCESS_ROADMAP);
         }
-        return roadmap;
+
+        return roadmapMapper.toDto(roadmap);
+
+        // Retrieve and map lectures
+//        List<RoadmapAndLectureResponse.LectureResponse> lectures = lectureRepository.findByRoadmapId(roadmapId).stream()
+//                .map(lecture -> new RoadmapAndLectureResponse.LectureResponse(
+//                        lecture.getLectureId(),
+//                        lecture.getTitle(),
+//                        lecture.getUrl()
+//                ))
+//                .collect(Collectors.toList());
+
+//        return RoadmapAndLectureResponse.builder()
+//                .roadmapId(roadmap.getRoadmapId())
+//                .title(roadmap.getTitle())
+//                .description(roadmap.getDescription())
+//                .difficultyLevel(roadmap.getDifficultyLevel())
+//                .projectSummary(roadmap.getProjectSummary())
+//                .steps(roadmap.getSteps())
+//                .lectures(lectures)
+//                .build();
     }
 
     @Transactional
@@ -111,7 +139,6 @@ public class RoadmapService {
             post.setRoadmap(null); // roadmap 참조를 해제
             postRepository.save(post); // 변경 사항 저장
         }
-
         roadmapRepository.delete(roadmap);
     }
 
