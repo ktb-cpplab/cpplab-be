@@ -19,9 +19,9 @@ COPY . /app
 # 실행을 위한 새로운 Java 21 베이스 이미지
 FROM openjdk:21-jdk-slim
 
-# 빌드된 JAR 파일 복사
-WORKDIR /app
-COPY --from=builder /app/build/libs/cpplab-0.0.1-SNAPSHOT.jar app.jar
+# # 빌드된 JAR 파일 복사
+# WORKDIR /app
+# COPY --from=builder /app/build/libs/cpplab-0.0.1-SNAPSHOT.jar app.jar
 
 # application.properties 파일을 config 폴더에 복사
 COPY application.properties /app/config/application.properties
