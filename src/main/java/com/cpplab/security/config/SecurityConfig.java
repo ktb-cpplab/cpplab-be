@@ -85,13 +85,7 @@ public class SecurityConfig {
 
         // HTTPS 요청 요구
         http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
-//        http.requiresChannel(channel ->
-//                channel.antMatchers("/login*").requiresSecure()
-//        );
-
-        http.requiresChannel(channel ->
-                channel.requestMatchers("/login*").requiresSecure()
-        );
+        http.requiresChannel(channel -> channel.requestMatchers("/login*").requiresSecure());
 
        // 경로별 인가 작업
         http.securityMatcher("/**") // 모든 요청에 대해
@@ -105,7 +99,7 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
             // 로드맵 임시 허용
-            "/api/v1/roadmap",
+            "/api/v1/roadmap/**",
 
             "/api/v1/auth/**",
             "/",
