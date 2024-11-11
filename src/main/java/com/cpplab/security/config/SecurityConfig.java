@@ -55,7 +55,7 @@ public class SecurityConfig {
                 configuration.setAllowedHeaders(Collections.singletonList("*"));
                 configuration.setMaxAge(3600L);
 
-//                configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
+                configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
                 configuration.setExposedHeaders(Collections.singletonList("access"));
 
                 return configuration;
@@ -83,12 +83,16 @@ public class SecurityConfig {
         // 세션 설정: STATELESS
         http.sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
 
-        // 경로별 인가 작업
+        // HTTPS 요청 요구
+        http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
+
+       // 경로별 인가 작업
         http.securityMatcher("/**") // 모든 요청에 대해
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(WHITE_LIST_URL).permitAll()
                         .anyRequest().authenticated()
                 );
+
         return http.build();
     }
 
