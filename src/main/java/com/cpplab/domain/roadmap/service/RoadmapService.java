@@ -173,11 +173,11 @@ public class RoadmapService {
         headers.set("Content-Type", "application/json");
         HttpEntity<AiUrlRequest> requestEntity = new HttpEntity<>(aiRequest, headers);
 
-        ResponseEntity<Map<String, Object>[]> response = restTemplate.exchange(
+        ResponseEntity<Map<String, String>[]> response = restTemplate.exchange(
                 aiUrl + "/ai/recommend",
                 HttpMethod.POST,
                 requestEntity,
-                (Class<Map<String, Object>[]>) (Class<?>) Map[].class
+                (Class<Map<String, String>[]>) (Class<?>) Map[].class
         );
 
         // Map response to AiUrlResponse objects
