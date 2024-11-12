@@ -14,4 +14,7 @@ public interface LectureRepository extends JpaRepository<LectureEntity, Long> {
 
     @Query("SELECT l FROM LectureEntity l WHERE l.roadmap.roadmapId = :roadmapId")
     List<LectureEntity> findByRoadmapId(@Param("roadmapId") Long roadmapId);
+
+    List<LectureEntity> findByRoadmap(RoadmapEntity roadmap);
+
 }
