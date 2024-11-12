@@ -42,7 +42,7 @@ public class   JWTFilter extends OncePerRequestFilter {
         String accessToken = request.getHeader("access");
 
         // 토큰이 없다면 다음 필터로 넘김, 권한이 필요없는 요청도 있기때문에 일단 다음 필터로 넘긴다.
-        if (accessToken == null) {
+        if (accessToken == null || accessToken.trim().isEmpty()) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -51,26 +51,28 @@ public class   JWTFilter extends OncePerRequestFilter {
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
-
-            ErrorReasonDTO errorResponse = ErrorStatus.TOKEN_EXPIRED.getReasonHttpStatus();
-
-            // ErrorReasonDTO를 JSON 형식으로 변환
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper.writeValueAsString(errorResponse);
-
-            // 응답 설정
-            response.setStatus(ErrorStatus.TOKEN_EXPIRED.getHttpStatus().value());
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-
-            // JSON 응답 전송
-            response.getWriter().write(jsonResponse);
+            sendErrorResponse(response, ErrorStatus.TOKEN_EXPIRED);
+//            ErrorReasonDTO errorResponse = ErrorStatus.TOKEN_EXPIRED.getReasonHttpStatus();
+//
+//            // ErrorReasonDTO를 JSON 형식으로 변환
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+//
+//            // 응답 설정
+//            response.setStatus(ErrorStatus.TOKEN_EXPIRED.getHttpStatus().value());
+//            response.setContentType("application/json");
+//            response.setCharacterEncoding("UTF-8");
+//
+//            // JSON 응답 전송
+//            response.getWriter().write(jsonResponse);
+            return;
+        } catch (IllegalArgumentException e) {
+            sendErrorResponse(response, ErrorStatus.INVALID_TOKEN);
             return;
         }
 
         // 토큰이 access인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(accessToken);
-
         if (!category.equals("access")) {
 
             //response body
@@ -96,4 +98,18 @@ public class   JWTFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
+    // 에러 응답 헬퍼 메서드
+    private void sendErrorResponse(HttpServletResponse response, ErrorStatus errorStatus) throws IOException {
+        ErrorReasonDTO errorResponse = errorStatus.getReasonHttpStatus();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+        response.setStatus(errorStatus.getHttpStatus().value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(jsonResponse);
+    }
+
+
 }
+
