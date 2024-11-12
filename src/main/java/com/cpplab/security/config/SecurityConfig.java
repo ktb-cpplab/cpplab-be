@@ -6,11 +6,13 @@ import java.util.Collections;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -84,8 +86,8 @@ public class SecurityConfig {
         http.sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
 
         // HTTPS 요청 요구
-        http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
-        http.requiresChannel(channel -> channel.requestMatchers("/login*").requiresSecure());
+//        http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
+//        http.requiresChannel(channel -> channel.requestMatchers("/login*").requiresSecure());
 
        // 경로별 인가 작업
         http.securityMatcher("/**") // 모든 요청에 대해
@@ -94,12 +96,16 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 );
 
+        // 인증되지 않은 요청에 대해 JSON 형식의 401 응답을 반환하도록 설정
+        http.exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
+
         return http.build();
     }
 
     private static final String[] WHITE_LIST_URL = {
             // 로드맵 임시 허용
-            "/api/v1/roadmap/**",
+//            "/api/v1/roadmap/**",
+//            "/api/v1/post/**",
 
             "/api/v1/auth/**",
             "/",
