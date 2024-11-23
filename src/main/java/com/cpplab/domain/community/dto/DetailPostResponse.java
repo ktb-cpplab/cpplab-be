@@ -33,15 +33,15 @@ public record DetailPostResponse(
             String profileImage
     ) {}
 
-    public record CommentResponse(
-            Long commentId,
-            Long userId,
-            String nickName,
-            Rank rank,
-            String content,
-            String profileImage,
-            LocalDateTime modifiedAt
-    ) {}
+//    public record CommentResponse(
+//            Long commentId,
+//            Long userId,
+//            String nickName,
+//            Rank rank,
+//            String content,
+//            String profileImage,
+//            LocalDateTime modifiedAt
+//    ) {}
 
 }
 

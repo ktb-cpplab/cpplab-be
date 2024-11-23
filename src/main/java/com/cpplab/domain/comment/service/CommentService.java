@@ -51,9 +51,14 @@ public class CommentService {
                 .build();
         CommentEntity savedComment = commentRepository.save(comment);
 
+        // 4. 댓글 수 증가
+        postEntity.setCommentCount(postEntity.getCommentCount() + 1);
+        postRepository.save(postEntity);
+
         return toCommentResponse(savedComment);
     }
 
+    @Transactional
     public CommentResponse updateComment(Long userId, Long postId, Long commentId, CommentRequest request) {
         // 1. 댓글 존재 확인
         CommentEntity comment = commentRepository.findById(commentId)
@@ -74,6 +79,28 @@ public class CommentService {
         return toCommentResponse(updateComment);
     }
 
+    @Transactional
+    public void deleteComment(Long userId, Long postId, Long commentId) {
+        // 1. 댓글 존재 확인
+        CommentEntity deleteComment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_COMMENT));
+
+        // 2. 게시글 존재 확인
+        PostEntity postEntity = postRepository.findById(postId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
+
+        // 3. 본인 댓글인지 확인
+        if (!deleteComment.getUser().getUserId().equals(userId)) {
+            throw new GeneralException(ErrorStatus.FORBIDDEN);
+        }
+        // 4. 댓글 삭제
+        commentRepository.delete(deleteComment);
+
+        // 5. 댓글 수 감소
+        postEntity.setCommentCount(postEntity.getCommentCount() - 1);
+        postRepository.save(postEntity);
+    }
+
     // CommentEntity를 CommentResponse로 변환하는 메서드
     private CommentResponse toCommentResponse(CommentEntity commentEntity) {
         return CommentResponse.builder()
@@ -87,23 +114,6 @@ public class CommentService {
                 .createdAt(commentEntity.getCreatedAt())
                 .modifiedAt(commentEntity.getModifiedAt())
                 .build();
-    }
-
-    public void deleteComment(Long userId, Long postId, Long commentId) {
-        // 1. 댓글 존재 확인
-        CommentEntity deleteComment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_COMMENT));
-
-        // 2. 게시글 존재 확인
-        if (!postRepository.existsById(postId)) {
-            throw new GeneralException(ErrorStatus._NOT_FOUND_POST);
-        }
-        // 3. 본인 댓글인지 확인
-        else if (!deleteComment.getUser().getUserId().equals(userId)) {
-            throw new GeneralException(ErrorStatus.FORBIDDEN);
-        }
-        // 4. 댓글 삭제
-        commentRepository.delete(deleteComment);
     }
 
 
