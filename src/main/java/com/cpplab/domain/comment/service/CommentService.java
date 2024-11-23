@@ -99,7 +99,7 @@ public class CommentService {
             throw new GeneralException(ErrorStatus._NOT_FOUND_POST);
         }
         // 3. 본인 댓글인지 확인
-        else if (deleteComment.getUser().getUserId().equals(userId)) {
+        else if (!deleteComment.getUser().getUserId().equals(userId)) {
             throw new GeneralException(ErrorStatus.FORBIDDEN);
         }
         // 4. 댓글 삭제
