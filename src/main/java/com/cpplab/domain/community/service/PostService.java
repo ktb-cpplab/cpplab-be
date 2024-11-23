@@ -109,7 +109,7 @@ public class PostService {
                     .views(post.getViews())
                     .likes(post.getLikes())
                     .commentCount(post.getCommentCount())
-                    .isLike(isLike)
+                    .isLiked(isLike)
                     .rank(rank)
                     .createdAt(post.getCreatedAt())
                     .modifiedAt(post.getModifiedAt())
