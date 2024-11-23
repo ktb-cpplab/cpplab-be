@@ -15,6 +15,7 @@ public record AllCommentResponse(
     Rank rank, // 직위
     String content, // 댓글내용
     String profileImage, // 프로필
+    LocalDateTime createdAt, // 마지막 수정일시
     LocalDateTime modifiedAt // 마지막 수정일시
 ) {
     public static AllCommentResponse from(CommentEntity comment) {

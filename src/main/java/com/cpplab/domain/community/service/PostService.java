@@ -10,9 +10,12 @@ import com.cpplab.domain.community.entity.LikeEntity;
 import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.community.repository.LikeRepository;
 import com.cpplab.domain.community.repository.PostRepository;
+import com.cpplab.domain.mypage.entity.PortfolioEntity;
+import com.cpplab.domain.mypage.repository.PortfolioRepository;
 import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
 import com.cpplab.domain.roadmap.repository.RoadmapRepository;
 import com.cpplab.global.common.code.status.ErrorStatus;
+import com.cpplab.global.common.enums.Rank;
 import com.cpplab.global.common.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +36,7 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final RoadmapRepository roadmapRepository;
     private final CommentRepository commentRepository;
+    private final PortfolioRepository portfolioRepository;
 
 //    public PostResponse createPost(String userName, PostRequest.PostPutDto request) {
 //
@@ -109,13 +113,18 @@ public class PostService {
         postEntity.setViews(postEntity.getViews() + 1);
         postRepository.save(postEntity); // 변경 사항 저장
 
+        // PortfolioEntity에서 Rank 조회
+        Rank rank = portfolioRepository.findByUser(postEntity.getUser())
+                .map(PortfolioEntity::getRank)
+                .orElse(null); // 포트폴리오가 없을 경우 null 반환
+
         // 댓글 조회 및 변환
         List<AllCommentResponse> comments = commentRepository.findByPost_PostId(postId).stream()
                 .map(AllCommentResponse::from)
                 .collect(Collectors.toList());
 
         // DetailPostResponse 생성 및 반환
-        return new DetailPostResponse(postEntity, comments);
+        return new DetailPostResponse(postEntity, rank, comments);
     }
 
     public PostEntity updatePost(Long userId, Long postId, PostRequest.PostPutDto request) {
