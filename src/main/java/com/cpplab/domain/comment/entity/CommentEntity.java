@@ -30,6 +30,7 @@ public class CommentEntity extends BaseEntity {
     @JoinColumn(name = "userId")
     private UserEntity user;
 
+//    @ManyToOne(cascade = CascadeType.REMOVE) // PostEntity 삭제 시 관련 LikeEntity도 삭제
     @ManyToOne
     @JoinColumn(name = "postId")
     private PostEntity post;

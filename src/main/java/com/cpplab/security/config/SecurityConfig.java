@@ -103,10 +103,6 @@ public class SecurityConfig {
     }
 
     private static final String[] WHITE_LIST_URL = {
-            // 로드맵 임시 허용
-//            "/api/v1/roadmap/**",
-//            "/api/v1/post/**",
-
             "/api/v1/auth/**",
             "/",
             "api/v1/auth/reissue", // 엑세스토큰 리프레시 토큰으로 재발급 경로

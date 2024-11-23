@@ -21,7 +21,7 @@ public class LikeEntity {
     @JoinColumn(name = "userId")
     private UserEntity user;
 
-    @ManyToOne // // 여러 개의 LikeEntity 하나의 PostEntity
+    @ManyToOne
     @JoinColumn(name = "postId")
     private PostEntity post;
 }

@@ -146,20 +146,25 @@ public class PostService {
         return postRepository.save(updateEntity);
     }
 
+    @Transactional
     public void deletePost(Long userId,Long postId) {
         // 1. 게시글 존재 확인
-        PostEntity deleteEntity = postRepository.findById(postId)
+        PostEntity deletePostEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
 
         // 2. 본인 게시물인지 확인
-        if (!deleteEntity.getUser().getUserId().equals(userId)) {
+        if (!deletePostEntity.getUser().getUserId().equals(userId)) {
             throw new GeneralException(ErrorStatus.FORBIDDEN);
         }
 
-        // 3. 게시글 삭제
-        postRepository.delete(deleteEntity);
+        // 3. 관련 LikeEntity 삭제
+        likeRepository.deleteByPost(deletePostEntity);
 
-        // 댓글도 전부 삭제되는지 확인할 것.
+        // 4. 관련 CommentEntity 삭제
+        commentRepository.deleteByPost(deletePostEntity);
+
+        // 3. 게시글 삭제
+        postRepository.delete(deletePostEntity);
     }
 
     public void likePost(Long userId, Long postId, boolean likeStatus){
