@@ -84,7 +84,7 @@ public class PostService {
     }
 
     // 게시글 조회
-    public Page<PostEntity> getPosts(Pageable pageable) {
+    public Page<PostEntity> getPosts(Long userId, Pageable pageable) {
         return postRepository.findAll(pageable); // 페이징을 적용해 Post 데이터베이스에서 데이터를 가져옵니다.
     }
 

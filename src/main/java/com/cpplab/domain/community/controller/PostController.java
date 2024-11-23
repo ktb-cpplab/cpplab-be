@@ -36,8 +36,8 @@ public class PostController {
 
     // 게시글 조회(페이징)
     @GetMapping("/all")
-    public ApiResponse<Page<PostEntity>> getPosts(Pageable pageable){
-        return ApiResponse.onSuccess(postService.getPosts(pageable));
+    public ApiResponse<Page<PostEntity>> getPosts(@AuthenticationPrincipal CustomOAuth2User customUser, Pageable pageable){
+        return ApiResponse.onSuccess(postService.getPosts(customUser.getUserId(), pageable));
     }
 
     // 게시글 상세 조회, 조회수+1
