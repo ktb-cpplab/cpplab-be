@@ -6,6 +6,7 @@ import com.cpplab.domain.comment.dto.AllCommentResponse;
 import com.cpplab.domain.comment.repository.CommentRepository;
 import com.cpplab.domain.community.dto.DetailPostResponse;
 import com.cpplab.domain.community.dto.PostRequest;
+import com.cpplab.domain.community.dto.PostResponse;
 import com.cpplab.domain.community.entity.LikeEntity;
 import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.community.repository.LikeRepository;
@@ -18,8 +19,11 @@ import com.cpplab.global.common.code.status.ErrorStatus;
 import com.cpplab.global.common.enums.Rank;
 import com.cpplab.global.common.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +33,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
@@ -84,8 +89,44 @@ public class PostService {
     }
 
     // 게시글 조회
-    public Page<PostEntity> getPosts(Long userId, Pageable pageable) {
-        return postRepository.findAll(pageable); // 페이징을 적용해 Post 데이터베이스에서 데이터를 가져옵니다.
+    public Page<PostResponse> getPosts(Long userId, Pageable pageable) {
+
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("postId").descending() // postId 기준 내림차순
+        );
+        return postRepository.findAll(sortedPageable).map(post -> {
+
+            log.info("Checking existence for userId: {}, postId: {}", userId, post.getPostId());
+            boolean isLike = likeRepository.existsByUserUserIdAndPostPostId(userId, post.getPostId());
+            log.info("isLike result: {}", isLike);
+
+
+            Rank rank = portfolioRepository.findByUser(post.getUser())
+                    .map(PortfolioEntity::getRank)
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_PORTFOLIO));
+
+            return PostResponse.builder()
+                    .postId(post.getPostId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .views(post.getViews())
+                    .likes(post.getLikes())
+                    .commentCount(post.getCommentCount())
+                    .isLike(isLike)
+                    .rank(rank)
+                    .createdAt(post.getCreatedAt())
+                    .modifiedAt(post.getModifiedAt())
+                    .user(PostResponse.PostUserResponse.builder()
+                            .userId(post.getUser().getUserId())
+                            .nickName(post.getUser().getNickName())
+                            .profileImage(post.getUser().getProfileImage())
+                            .createdAt(post.getUser().getCreatedAt())
+                            .modifiedAt(post.getUser().getModifiedAt())
+                            .build())
+                    .build();
+        });
     }
 
     // 게시글 상세 조회

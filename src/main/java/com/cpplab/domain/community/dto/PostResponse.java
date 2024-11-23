@@ -1,6 +1,9 @@
 package com.cpplab.domain.community.dto;
 
+import com.cpplab.global.common.enums.Rank;
 import lombok.Builder;
+
+import java.time.LocalDateTime;
 
 @Builder
 public record PostResponse(
@@ -9,15 +12,19 @@ public record PostResponse(
     String content,
     Long views,
     Long likes,
+    Long commentCount,
+    boolean isLike,
+    Rank rank,
+    LocalDateTime createdAt,
+    LocalDateTime modifiedAt,
     PostUserResponse user
-
 ) {
     @Builder
     public static record PostUserResponse(
             Long userId,
             String nickName,
             String profileImage,
-            String createdAt,
-            String modifiedAt
+            LocalDateTime createdAt,
+            LocalDateTime modifiedAt
     ) {}
 }

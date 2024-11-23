@@ -3,6 +3,7 @@ package com.cpplab.domain.community.controller;
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
 import com.cpplab.domain.community.dto.DetailPostResponse;
 import com.cpplab.domain.community.dto.PostRequest;
+import com.cpplab.domain.community.dto.PostResponse;
 import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.community.service.PostService;
 import com.cpplab.global.common.ApiResponse;
@@ -36,7 +37,7 @@ public class PostController {
 
     // 게시글 조회(페이징)
     @GetMapping("/all")
-    public ApiResponse<Page<PostEntity>> getPosts(@AuthenticationPrincipal CustomOAuth2User customUser, Pageable pageable){
+    public ApiResponse<Page<PostResponse>> getPosts(@AuthenticationPrincipal CustomOAuth2User customUser, Pageable pageable){
         return ApiResponse.onSuccess(postService.getPosts(customUser.getUserId(), pageable));
     }
 

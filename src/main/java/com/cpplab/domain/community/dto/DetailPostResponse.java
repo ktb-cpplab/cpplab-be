@@ -12,3 +12,5 @@ public record DetailPostResponse(
     List<AllCommentResponse> comments
 ) {
 }
+
+
