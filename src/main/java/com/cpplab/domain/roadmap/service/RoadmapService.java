@@ -7,6 +7,7 @@ import com.cpplab.domain.community.repository.PostRepository;
 import com.cpplab.domain.mypage.entity.PortfolioEntity;
 import com.cpplab.domain.mypage.repository.PortfolioRepository;
 import com.cpplab.domain.roadmap.dto.*;
+import com.cpplab.domain.roadmap.entity.LectureEntity;
 import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
 import com.cpplab.domain.roadmap.entity.roadmap.StepEntity;
 import com.cpplab.domain.roadmap.entity.roadmap.TaskEntity;
@@ -45,6 +46,7 @@ public class RoadmapService {
     private final PostRepository postRepository;
     private final PortfolioRepository portfolioRepository;
     private final RoadmapMapper roadmapMapper;
+    private final LectureRepository lectureRepository;
 
     public RoadmapEntity saveRoadmap(Long userId, RoadmapRequest roadmapRequest) {
         UserEntity user = userRepository.findById(userId)
@@ -139,6 +141,13 @@ public class RoadmapService {
             post.setRoadmap(null); // roadmap 참조를 해제
             postRepository.save(post); // 변경 사항 저장
         }
+
+        // 2. LectureEntity에서 roadmap 참조를 해제하고 LectureEntity 삭제
+        List<LectureEntity> lecturesWithRoadmap = lectureRepository.findByRoadmap(roadmap);
+        for (LectureEntity lecture : lecturesWithRoadmap) {
+            lectureRepository.delete(lecture); // LectureEntity 삭제
+        }
+
         roadmapRepository.delete(roadmap);
     }
 
@@ -162,22 +171,24 @@ public class RoadmapService {
 
         // 2. AiRecommendationRequest 객체 생성 (필요한 필드들을 추출)
         AiUrlRequest aiRequest = new AiUrlRequest(
-                portfolioEntity.getHopeJob(),               // hopeJob 필드
+                portfolioEntity.getHopeJob() != null ? portfolioEntity.getHopeJob() : "", // hopeJob 필드
+//                portfolioEntity.getHopeJob(),               // hopeJob 필드
                 roadmapRequest.techStacks(),             // techStacks 필드
                 roadmapRequest.difficultyLevel(),       // difficultyLevel 필드
                 roadmapRequest.title(),                  // projectTitle 필드
                 roadmapRequest.projectSummary()             // projectDescription 필드
         );
+        System.out.println("@@@"+ aiRequest);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
         HttpEntity<AiUrlRequest> requestEntity = new HttpEntity<>(aiRequest, headers);
 
-        ResponseEntity<Map<String, Object>[]> response = restTemplate.exchange(
+        ResponseEntity<Map<String, String>[]> response = restTemplate.exchange(
                 aiUrl + "/ai/recommend",
                 HttpMethod.POST,
                 requestEntity,
-                (Class<Map<String, Object>[]>) (Class<?>) Map[].class
+                (Class<Map<String, String>[]>) (Class<?>) Map[].class
         );
 
         // Map response to AiUrlResponse objects

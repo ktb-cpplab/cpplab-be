@@ -30,7 +30,8 @@ public class RoadmapMapper {
                 .description(roadmap.getDescription())
                 .difficultyLevel(roadmap.getDifficultyLevel())
                 .projectSummary(roadmap.getProjectSummary())
-                .steps(roadmap.getSteps())  // Add steps here
+                .techStacks(roadmap.getTechStacks())
+                .steps(roadmap.getSteps())
                 .lectures(lectures)
                 .build();
     }

@@ -11,6 +11,4 @@ public class HealthCheckController {
     public ApiResponse<String> healthCheck() {
         return ApiResponse.onSuccess("health check");
     }
-
-
 }

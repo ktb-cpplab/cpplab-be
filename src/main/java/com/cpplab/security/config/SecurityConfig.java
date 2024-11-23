@@ -85,7 +85,11 @@ public class SecurityConfig {
         // 세션 설정: STATELESS
         http.sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
 
-        // 경로별 인가 작업
+        // HTTPS 요청 요구
+//        http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
+        http.requiresChannel(channel -> channel.requestMatchers("/login*").requiresSecure());
+
+       // 경로별 인가 작업
         http.securityMatcher("/**") // 모든 요청에 대해
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/**").permitAll()
@@ -99,6 +103,10 @@ public class SecurityConfig {
     }
 
     private static final String[] WHITE_LIST_URL = {
+            // 로드맵 임시 허용
+//            "/api/v1/roadmap/**",
+//            "/api/v1/post/**",
+
             "/api/v1/auth/**",
             "/",
             "api/v1/auth/reissue", // 엑세스토큰 리프레시 토큰으로 재발급 경로

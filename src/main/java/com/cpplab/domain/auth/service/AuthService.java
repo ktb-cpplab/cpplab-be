@@ -133,6 +133,8 @@ public class AuthService {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge((int)refreshTokenExpirationTime); // 24시간
         cookie.setHttpOnly(true);
+
+        cookie.setSecure(true);
         return cookie;
     }
 }

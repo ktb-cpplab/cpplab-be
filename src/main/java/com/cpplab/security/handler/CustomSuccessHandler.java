@@ -51,18 +51,20 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String role = auth.getAuthority();
 
         // 토큰 생성
-        String access = jwtUtil.createJwt("access", userId, accessTokenExpirationTime);
+//        String access = jwtUtil.createJwt("access", userId, accessTokenExpirationTime);
         String refresh = jwtUtil.createJwt("refresh", userId, refreshTokenExpirationTime);
 
         //Refresh 토큰 저장
         addRefreshEntity(userId, refresh, refreshTokenExpirationTime);
 
         //응답 설정
-        response.setHeader("access", access); // 응답헤더에 엑세스 토큰
+//        response.setHeader("access", access); // 응답헤더에 엑세스 토큰
         response.addCookie(createCookie("refresh", refresh)); // 응답쿠키에 리프레시 토큰
         //response.setStatus(HttpStatus.OK.value()); 추후 exception 코드로 변경
         response.sendRedirect(feUrl);
     }
+
+
 
     private void addRefreshEntity(Long userId, String refresh, Long expiredMs) {
 
@@ -80,7 +82,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge((int)refreshTokenExpirationTime);
-//        cookie.setSecure(true);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
 
@@ -88,3 +90,4 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     }
 
 }
+
