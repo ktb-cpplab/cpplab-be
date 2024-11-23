@@ -97,12 +97,7 @@ public class PostService {
                 Sort.by("postId").descending() // postId 기준 내림차순
         );
         return postRepository.findAll(sortedPageable).map(post -> {
-
-            log.info("Checking existence for userId: {}, postId: {}", userId, post.getPostId());
             boolean isLike = likeRepository.existsByUserUserIdAndPostPostId(userId, post.getPostId());
-            log.info("isLike result: {}", isLike);
-
-
             Rank rank = portfolioRepository.findByUser(post.getUser())
                     .map(PortfolioEntity::getRank)
                     .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_PORTFOLIO));
@@ -217,6 +212,7 @@ public class PostService {
         postRepository.delete(deletePostEntity);
     }
 
+    @Transactional
     public void likePost(Long userId, Long postId, boolean likeStatus){
 
         // 1. 게시글 존재 확인
@@ -240,8 +236,8 @@ public class PostService {
                 newLike.setPost(postEntity);
                 likeRepository.save(newLike);
 
-                // 게시물 조회수 증가
-                postEntity.setViews(postEntity.getViews() + 1);
+                // 게시물 좋아요 증가
+                postEntity.setLikes(postEntity.getLikes() + 1);
                 postRepository.save(postEntity);
             }
         } else if (!likeStatus) {
@@ -250,8 +246,8 @@ public class PostService {
             existingLike.ifPresent(like -> {
                 likeRepository.delete(like);
 
-                // 게시물 조회수 감소
-                postEntity.setViews(postEntity.getViews() - 1);
+                // 게시물 좋아요 감소
+                postEntity.setLikes(postEntity.getLikes() - 1);
                 postRepository.save(postEntity);
             });
         }
