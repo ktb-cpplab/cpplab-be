@@ -23,8 +23,6 @@ public record PostResponse(
     public static record PostUserResponse(
             Long userId,
             String nickName,
-            String profileImage,
-            LocalDateTime createdAt,
-            LocalDateTime modifiedAt
+            String profileImage
     ) {}
 }

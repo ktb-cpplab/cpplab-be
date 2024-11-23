@@ -118,8 +118,6 @@ public class PostService {
                             .userId(post.getUser().getUserId())
                             .nickName(post.getUser().getNickName())
                             .profileImage(post.getUser().getProfileImage())
-                            .createdAt(post.getUser().getCreatedAt())
-                            .modifiedAt(post.getUser().getModifiedAt())
                             .build())
                     .build();
         });
