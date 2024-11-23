@@ -92,10 +92,10 @@ public class SecurityConfig {
        // 경로별 인가 작업
         http.securityMatcher("/**") // 모든 요청에 대해
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers(WHITE_LIST_URL).permitAll()
                         .anyRequest().authenticated()
                 );
-
         // 인증되지 않은 요청에 대해 JSON 형식의 401 응답을 반환하도록 설정
         http.exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
 
@@ -111,7 +111,6 @@ public class SecurityConfig {
             "/",
             "api/v1/auth/reissue", // 엑세스토큰 리프레시 토큰으로 재발급 경로
             "api/v1/auth/access", // 첫 로그인시, 엑세스 토큰 헤더 전달을 위한 경로
-            "/api/test/**",
             "/api/v1/health",
 
             // swagger
@@ -120,6 +119,11 @@ public class SecurityConfig {
             "/swagger-resources/**",
 
             // 공통응답 테스트
-            "/api/test/**"
+            "/api/test/**",
+
+            // 프로메테우스 액추에이터
+            "/actuator",
+            "/actuator/**"
+
     };
 }
