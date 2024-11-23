@@ -43,8 +43,8 @@ public class PostController {
 
     // 게시글 상세 조회, 조회수+1
     @GetMapping("/{postId}/detail")
-    public ApiResponse<DetailPostResponse> getPostDetail(@PathVariable Long postId){
-        return ApiResponse.onSuccess(postService.getPostDetail(postId));
+    public ApiResponse<DetailPostResponse> getPostDetail(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable Long postId){
+        return ApiResponse.onSuccess(postService.getPostDetail(customUser.getUserId(), postId));
     }
 
     // 게시글 수정, 본인 게시물만 수정 가능

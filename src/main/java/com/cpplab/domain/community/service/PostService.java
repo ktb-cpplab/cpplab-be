@@ -96,6 +96,7 @@ public class PostService {
                 pageable.getPageSize(),
                 Sort.by("postId").descending() // postId 기준 내림차순
         );
+
         return postRepository.findAll(sortedPageable).map(post -> {
             boolean isLike = likeRepository.existsByUserUserIdAndPostPostId(userId, post.getPostId());
             Rank rank = portfolioRepository.findByUser(post.getUser())
@@ -141,13 +142,35 @@ public class PostService {
 //    }
 
     @Transactional
-    public DetailPostResponse getPostDetail(Long postId) {
+    public DetailPostResponse getPostDetail(Long userId, Long postId) {
         // 게시글 조회
         PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
 
         postEntity.setViews(postEntity.getViews() + 1);
         postRepository.save(postEntity); // 변경 사항 저장
+
+        // 좋아요 여부 확인
+        boolean isLiked = likeRepository.existsByUserUserIdAndPostPostId(userId, postId);
+
+        // 작성자 정보
+        UserEntity user = postEntity.getUser();
+        DetailPostResponse.PostUserResponse userResponse = DetailPostResponse.PostUserResponse.builder()
+                .userId(user.getUserId())
+                .nickName(user.getNickName())
+                .profileImage(user.getProfileImage())
+                .build();
+
+        // Roadmap 정보
+        DetailPostResponse.RoadmapResponse roadmapResponse = null;
+        if (postEntity.getRoadmap() != null) {
+            RoadmapEntity roadmap = postEntity.getRoadmap();
+            roadmapResponse = DetailPostResponse.RoadmapResponse.builder()
+                    .roadmapId(roadmap.getRoadmapId())
+                    .title(roadmap.getTitle())
+                    .description(roadmap.getDescription())
+                    .build();
+        }
 
         // PortfolioEntity에서 Rank 조회
         Rank rank = portfolioRepository.findByUser(postEntity.getUser())
@@ -159,8 +182,23 @@ public class PostService {
                 .map(AllCommentResponse::from)
                 .collect(Collectors.toList());
 
+
         // DetailPostResponse 생성 및 반환
-        return new DetailPostResponse(postEntity, rank, comments);
+        return DetailPostResponse.builder()
+                .postId(postEntity.getPostId())
+                .title(postEntity.getTitle())
+                .content(postEntity.getContent())
+                .views(postEntity.getViews())
+                .likes(postEntity.getLikes())
+                .commentCount(postEntity.getCommentCount())
+                .isLike(isLiked)
+                .rank(rank)
+                .createdAt(postEntity.getCreatedAt())
+                .modifiedAt(postEntity.getModifiedAt())
+                .user(userResponse)
+                .roadmap(roadmapResponse)
+                .comments(comments)
+                .build();
     }
 
     public PostEntity updatePost(Long userId, Long postId, PostRequest.PostPutDto request) {
