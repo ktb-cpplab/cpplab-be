@@ -17,7 +17,7 @@ public record DetailPostResponse(
         Long views,
         Long likes,
         Long commentCount,
-        boolean isLike,
+        boolean isLiked,
         Rank rank,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,

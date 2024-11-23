@@ -185,7 +185,7 @@ public class PostService {
                 .views(postEntity.getViews())
                 .likes(postEntity.getLikes())
                 .commentCount(postEntity.getCommentCount())
-                .isLike(isLiked)
+                .isLiked(isLiked)
                 .rank(rank)
                 .createdAt(postEntity.getCreatedAt())
                 .modifiedAt(postEntity.getModifiedAt())
