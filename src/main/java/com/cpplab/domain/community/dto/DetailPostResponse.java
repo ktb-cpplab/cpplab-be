@@ -2,6 +2,7 @@ package com.cpplab.domain.community.dto;
 
 import com.cpplab.domain.comment.dto.AllCommentResponse;
 import com.cpplab.domain.community.entity.PostEntity;
+import com.cpplab.domain.roadmap.dto.RoadmapResponse;
 import com.cpplab.global.common.enums.Rank;
 import lombok.Builder;
 
@@ -30,13 +31,6 @@ public record DetailPostResponse(
             Long userId,
             String nickName,
             String profileImage
-    ) {}
-
-    @Builder
-    public record RoadmapResponse(
-            Long roadmapId,
-            String title,
-            String description
     ) {}
 
     public record CommentResponse(

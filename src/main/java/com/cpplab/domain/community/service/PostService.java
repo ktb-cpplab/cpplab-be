@@ -13,6 +13,7 @@ import com.cpplab.domain.community.repository.LikeRepository;
 import com.cpplab.domain.community.repository.PostRepository;
 import com.cpplab.domain.mypage.entity.PortfolioEntity;
 import com.cpplab.domain.mypage.repository.PortfolioRepository;
+import com.cpplab.domain.roadmap.dto.RoadmapResponse;
 import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
 import com.cpplab.domain.roadmap.repository.RoadmapRepository;
 import com.cpplab.global.common.code.status.ErrorStatus;
@@ -160,14 +161,10 @@ public class PostService {
                 .build();
 
         // Roadmap 정보
-        DetailPostResponse.RoadmapResponse roadmapResponse = null;
+        RoadmapResponse roadmapResponse = null;
         if (postEntity.getRoadmap() != null) {
-            RoadmapEntity roadmap = postEntity.getRoadmap();
-            roadmapResponse = DetailPostResponse.RoadmapResponse.builder()
-                    .roadmapId(roadmap.getRoadmapId())
-                    .title(roadmap.getTitle())
-                    .description(roadmap.getDescription())
-                    .build();
+            RoadmapEntity roadmapEntity = postEntity.getRoadmap();
+            roadmapResponse = RoadmapResponse.from(roadmapEntity);
         }
 
         // PortfolioEntity에서 Rank 조회
@@ -179,7 +176,6 @@ public class PostService {
         List<AllCommentResponse> comments = commentRepository.findByPost_PostId(postId).stream()
                 .map(AllCommentResponse::from)
                 .collect(Collectors.toList());
-
 
         // DetailPostResponse 생성 및 반환
         return DetailPostResponse.builder()

@@ -27,6 +27,7 @@ public record AllCommentResponse(
                 .rank(comment.getRank())               // 직위
                 .content(comment.getContent())         // 댓글 내용
                 .profileImage(comment.getUser().getProfileImage()) // 프로필
+                .createdAt(comment.getCreatedAt()) // 생성일시
                 .modifiedAt(comment.getModifiedAt()) // 마지막 수정일시
                 .build();
     }
