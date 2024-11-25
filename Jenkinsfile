@@ -29,6 +29,7 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'application-yml', variable: 'APPLICATION_YML')]) {
                     sh "cp \$PROPERTIES application.yml"
+                }
                 withCredentials([file(credentialsId: 'prometheus-yml', variable: 'PROMETHUES_YML')]) {
                     sh "cp \$PROPERTIES prometheus.yml"
                 }
