@@ -20,7 +20,8 @@ WORKDIR /app
 COPY --from=builder /app/build/libs/cpplab-0.0.1-SNAPSHOT.jar /app/app.jar
 
 # application.properties 파일을 config 폴더에 복사
-COPY application.properties /app/config/application.properties
+COPY application.yml /app/config/application.yml
+COPY prometheus.yml /app/config/prometheus.yml
 
 # 애플리케이션 포트 노출
 EXPOSE 8080
