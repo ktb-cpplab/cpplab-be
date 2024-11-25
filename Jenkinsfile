@@ -13,6 +13,8 @@ pipeline {
         BRANCH_NAME = "${env.GIT_BRANCH}"
         DOCKER_TAG = "${env.BUILD_NUMBER}"  // Jenkins build number
         AWS_CREDENTIALS_ID = 'AWS_CREDENTIALS'
+        APPLICATION_YML = 'application.yml'
+        PROMETHEUS_YML = 'prometheus.yml'
     }
 
     stages {
@@ -28,10 +30,10 @@ pipeline {
         stage('Prepare Application Properties') {
             steps {
                 withCredentials([file(credentialsId: 'application-yml', variable: 'APPLICATION_YML')]) {
-                    sh "cp \$APPLICATION_YML application.yml"
+                    sh "cp \$APPLICATION_YML ${APPLICATION_YML}"
                 }
-                withCredentials([file(credentialsId: 'prometheus-yml', variable: 'PROMETHUES_YML')]) {
-                    sh "cp \$PROMETHUES_YML prometheus.yml"
+                withCredentials([file(credentialsId: 'prometheus-yml', variable: 'PROMETHEUS_YML')]) {
+                    sh "cp \$PROMETHEUS_YML ${PROMETHEUS_YML}"
                 }
             }
         }
@@ -97,7 +99,8 @@ pipeline {
             }
         }
         always {
-            sh "rm -f application.properties" // 보안을 위해 빌드 완료 후 삭제
+            sh "rm -f ${APPLICATION_YML}" // 보안을 위해 빌드 완료 후 삭제
+            sh "rm -f ${PROMETHEUS_YML}" // 보안을 위해 빌드 완료 후 삭제
         }
     }
 }
