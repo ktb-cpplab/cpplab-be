@@ -29,14 +29,19 @@ pipeline {
 
         stage('Prepare Application Properties') {
             steps {
+                script {
+                    // src/main/resources 디렉토리 생성
+                    sh 'mkdir -p src/main/resources/yaml'
+                }
+
                 withCredentials([file(credentialsId: 'application-yml', variable: 'APPLICATION_YML')]) {
                     sh '''
-                        cp $APPLICATION_YML application.yml
+                        cp $APPLICATION_YML src/main/resources/application.yml
                     '''
                 }
-                withCredentials([file(credentialsId: 'prometheus-yml', variable: 'PROMETHEUS_YML')]) {
+                withCredentials([file(credentialsId: 'application-dev-yml', variable: 'APPLICATION_DEV_YML')]) {
                     sh '''
-                        cp $PROMETHEUS_YML prometheus.yml
+                        cp $APPLICATION_DEV_YML src/main/resources/yaml/application-dev.yml
                     '''
                 }
             }
@@ -103,7 +108,7 @@ pipeline {
             }
         }
         always {
-            sh "rm -f application.yml prometheus.yml"
+            sh "rm -f src/main/resources/application.yml src/main/resources/yaml/application-dev.yml"
         }
     }
 }
