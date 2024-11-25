@@ -30,10 +30,14 @@ pipeline {
         stage('Prepare Application Properties') {
             steps {
                 withCredentials([file(credentialsId: 'application-yml', variable: 'APPLICATION_YML')]) {
-                    sh "cp \$APPLICATION_YML ${APPLICATION_YML}"
+                    sh '''
+                        cp $APPLICATION_YML application.yml
+                    '''
                 }
                 withCredentials([file(credentialsId: 'prometheus-yml', variable: 'PROMETHEUS_YML')]) {
-                    sh "cp \$PROMETHEUS_YML ${PROMETHEUS_YML}"
+                    sh '''
+                        cp $PROMETHEUS_YML prometheus.yml
+                    '''
                 }
             }
         }
@@ -76,31 +80,30 @@ pipeline {
     post {
         success {
             withCredentials([string(credentialsId: 'Discord-Backend-Webhook', variable: 'DISCORD')]) {
-                        discordSend description: """
-                        제목 : ${currentBuild.displayName}
-                        결과 : ${currentBuild.result}
-                        실행 시간 : ${currentBuild.duration / 1000}s
-                        """,
-                        link: env.BUILD_URL, result: currentBuild.currentResult,
-                        title: "${env.JOB_NAME} : ${currentBuild.displayName} 성공",
-                        webhookURL: "$DISCORD"
+                discordSend description: """
+                제목: ${currentBuild.displayName}
+                결과: 성공
+                실행 시간: ${currentBuild.duration / 1000}s
+                """,
+                link: env.BUILD_URL,
+                title: "✅ ${env.JOB_NAME} : ${currentBuild.displayName} 성공",
+                webhookURL: "$DISCORD"
             }
         }
         failure {
             withCredentials([string(credentialsId: 'Discord-Backend-Webhook', variable: 'DISCORD')]) {
-                        discordSend description: """
-                        제목 : ${currentBuild.displayName}
-                        결과 : ${currentBuild.result}
-                        실행 시간 : ${currentBuild.duration / 1000}s
-                        """,
-                        link: env.BUILD_URL, result: currentBuild.currentResult,
-                        title: "${env.JOB_NAME} : ${currentBuild.displayName} 실패",
-                        webhookURL: "$DISCORD"
+                discordSend description: """
+                제목: ${currentBuild.displayName}
+                결과: 실패
+                실행 시간: ${currentBuild.duration / 1000}s
+                """,
+                link: env.BUILD_URL,
+                title: "❌ ${env.JOB_NAME} : ${currentBuild.displayName} 실패",
+                webhookURL: "$DISCORD"
             }
         }
         always {
-            sh "rm -f ${APPLICATION_YML}" // 보안을 위해 빌드 완료 후 삭제
-            sh "rm -f ${PROMETHEUS_YML}" // 보안을 위해 빌드 완료 후 삭제
+            sh "rm -f application.yml prometheus.yml"
         }
     }
 }
