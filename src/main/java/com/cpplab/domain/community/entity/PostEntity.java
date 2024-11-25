@@ -20,6 +20,7 @@ public class PostEntity extends BaseEntity {
     private String content; // 내용
     private Long views; // 조회수
     private Long likes; // 좋아요
+    private Long commentCount = 0L; // 댓글갯수
 
     @ManyToOne // 여러 개의 PostEntity가 하나의 UserEntity
     @JoinColumn(name = "userId")

@@ -6,17 +6,25 @@ import com.cpplab.domain.comment.dto.AllCommentResponse;
 import com.cpplab.domain.comment.repository.CommentRepository;
 import com.cpplab.domain.community.dto.DetailPostResponse;
 import com.cpplab.domain.community.dto.PostRequest;
+import com.cpplab.domain.community.dto.PostResponse;
 import com.cpplab.domain.community.entity.LikeEntity;
 import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.community.repository.LikeRepository;
 import com.cpplab.domain.community.repository.PostRepository;
+import com.cpplab.domain.mypage.entity.PortfolioEntity;
+import com.cpplab.domain.mypage.repository.PortfolioRepository;
+import com.cpplab.domain.roadmap.dto.RoadmapResponse;
 import com.cpplab.domain.roadmap.entity.roadmap.RoadmapEntity;
 import com.cpplab.domain.roadmap.repository.RoadmapRepository;
 import com.cpplab.global.common.code.status.ErrorStatus;
+import com.cpplab.global.common.enums.Rank;
 import com.cpplab.global.common.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +34,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
@@ -33,6 +42,7 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final RoadmapRepository roadmapRepository;
     private final CommentRepository commentRepository;
+    private final PortfolioRepository portfolioRepository;
 
 //    public PostResponse createPost(String userName, PostRequest.PostPutDto request) {
 //
@@ -80,8 +90,38 @@ public class PostService {
     }
 
     // 게시글 조회
-    public Page<PostEntity> getPosts(Pageable pageable) {
-        return postRepository.findAll(pageable); // 페이징을 적용해 Post 데이터베이스에서 데이터를 가져옵니다.
+    public Page<PostResponse> getPosts(Long userId, Pageable pageable) {
+
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("postId").descending() // postId 기준 내림차순
+        );
+
+        return postRepository.findAll(sortedPageable).map(post -> {
+            boolean isLike = likeRepository.existsByUserUserIdAndPostPostId(userId, post.getPostId());
+            Rank rank = portfolioRepository.findByUser(post.getUser())
+                    .map(PortfolioEntity::getRank)
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_PORTFOLIO));
+
+            return PostResponse.builder()
+                    .postId(post.getPostId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .views(post.getViews())
+                    .likes(post.getLikes())
+                    .commentCount(post.getCommentCount())
+                    .isLiked(isLike)
+                    .rank(rank)
+                    .createdAt(post.getCreatedAt())
+                    .modifiedAt(post.getModifiedAt())
+                    .user(PostResponse.PostUserResponse.builder()
+                            .userId(post.getUser().getUserId())
+                            .nickName(post.getUser().getNickName())
+                            .profileImage(post.getUser().getProfileImage())
+                            .build())
+                    .build();
+        });
     }
 
     // 게시글 상세 조회
@@ -101,7 +141,7 @@ public class PostService {
 //    }
 
     @Transactional
-    public DetailPostResponse getPostDetail(Long postId) {
+    public DetailPostResponse getPostDetail(Long userId, Long postId) {
         // 게시글 조회
         PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
@@ -109,13 +149,50 @@ public class PostService {
         postEntity.setViews(postEntity.getViews() + 1);
         postRepository.save(postEntity); // 변경 사항 저장
 
+        // 좋아요 여부 확인
+        boolean isLiked = likeRepository.existsByUserUserIdAndPostPostId(userId, postId);
+
+        // 작성자 정보
+        UserEntity user = postEntity.getUser();
+        DetailPostResponse.PostUserResponse userResponse = DetailPostResponse.PostUserResponse.builder()
+                .userId(user.getUserId())
+                .nickName(user.getNickName())
+                .profileImage(user.getProfileImage())
+                .build();
+
+        // Roadmap 정보
+        RoadmapResponse roadmapResponse = null;
+        if (postEntity.getRoadmap() != null) {
+            RoadmapEntity roadmapEntity = postEntity.getRoadmap();
+            roadmapResponse = RoadmapResponse.from(roadmapEntity);
+        }
+
+        // PortfolioEntity에서 Rank 조회
+        Rank rank = portfolioRepository.findByUser(postEntity.getUser())
+                .map(PortfolioEntity::getRank)
+                .orElse(null); // 포트폴리오가 없을 경우 null 반환
+
         // 댓글 조회 및 변환
         List<AllCommentResponse> comments = commentRepository.findByPost_PostId(postId).stream()
                 .map(AllCommentResponse::from)
                 .collect(Collectors.toList());
 
         // DetailPostResponse 생성 및 반환
-        return new DetailPostResponse(postEntity, comments);
+        return DetailPostResponse.builder()
+                .postId(postEntity.getPostId())
+                .title(postEntity.getTitle())
+                .content(postEntity.getContent())
+                .views(postEntity.getViews())
+                .likes(postEntity.getLikes())
+                .commentCount(postEntity.getCommentCount())
+                .isLiked(isLiked)
+                .rank(rank)
+                .createdAt(postEntity.getCreatedAt())
+                .modifiedAt(postEntity.getModifiedAt())
+                .user(userResponse)
+                .roadmap(roadmapResponse)
+                .comments(comments)
+                .build();
     }
 
     public PostEntity updatePost(Long userId, Long postId, PostRequest.PostPutDto request) {
@@ -146,22 +223,28 @@ public class PostService {
         return postRepository.save(updateEntity);
     }
 
+    @Transactional
     public void deletePost(Long userId,Long postId) {
         // 1. 게시글 존재 확인
-        PostEntity deleteEntity = postRepository.findById(postId)
+        PostEntity deletePostEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_POST));
 
         // 2. 본인 게시물인지 확인
-        if (!deleteEntity.getUser().getUserId().equals(userId)) {
+        if (!deletePostEntity.getUser().getUserId().equals(userId)) {
             throw new GeneralException(ErrorStatus.FORBIDDEN);
         }
 
-        // 3. 게시글 삭제
-        postRepository.delete(deleteEntity);
+        // 3. 관련 LikeEntity 삭제
+        likeRepository.deleteByPost(deletePostEntity);
 
-        // 댓글도 전부 삭제되는지 확인할 것.
+        // 4. 관련 CommentEntity 삭제
+        commentRepository.deleteByPost(deletePostEntity);
+
+        // 3. 게시글 삭제
+        postRepository.delete(deletePostEntity);
     }
 
+    @Transactional
     public void likePost(Long userId, Long postId, boolean likeStatus){
 
         // 1. 게시글 존재 확인
@@ -185,8 +268,8 @@ public class PostService {
                 newLike.setPost(postEntity);
                 likeRepository.save(newLike);
 
-                // 게시물 조회수 증가
-                postEntity.setViews(postEntity.getViews() + 1);
+                // 게시물 좋아요 증가
+                postEntity.setLikes(postEntity.getLikes() + 1);
                 postRepository.save(postEntity);
             }
         } else if (!likeStatus) {
@@ -195,8 +278,8 @@ public class PostService {
             existingLike.ifPresent(like -> {
                 likeRepository.delete(like);
 
-                // 게시물 조회수 감소
-                postEntity.setViews(postEntity.getViews() - 1);
+                // 게시물 좋아요 감소
+                postEntity.setLikes(postEntity.getLikes() - 1);
                 postRepository.save(postEntity);
             });
         }

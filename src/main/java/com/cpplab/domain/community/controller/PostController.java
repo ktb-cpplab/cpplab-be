@@ -3,6 +3,7 @@ package com.cpplab.domain.community.controller;
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
 import com.cpplab.domain.community.dto.DetailPostResponse;
 import com.cpplab.domain.community.dto.PostRequest;
+import com.cpplab.domain.community.dto.PostResponse;
 import com.cpplab.domain.community.entity.PostEntity;
 import com.cpplab.domain.community.service.PostService;
 import com.cpplab.global.common.ApiResponse;
@@ -36,14 +37,14 @@ public class PostController {
 
     // 게시글 조회(페이징)
     @GetMapping("/all")
-    public ApiResponse<Page<PostEntity>> getPosts(Pageable pageable){
-        return ApiResponse.onSuccess(postService.getPosts(pageable));
+    public ApiResponse<Page<PostResponse>> getPosts(@AuthenticationPrincipal CustomOAuth2User customUser, Pageable pageable){
+        return ApiResponse.onSuccess(postService.getPosts(customUser.getUserId(), pageable));
     }
 
     // 게시글 상세 조회, 조회수+1
     @GetMapping("/{postId}/detail")
-    public ApiResponse<DetailPostResponse> getPostDetail(@PathVariable Long postId){
-        return ApiResponse.onSuccess(postService.getPostDetail(postId));
+    public ApiResponse<DetailPostResponse> getPostDetail(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable Long postId){
+        return ApiResponse.onSuccess(postService.getPostDetail(customUser.getUserId(), postId));
     }
 
     // 게시글 수정, 본인 게시물만 수정 가능
