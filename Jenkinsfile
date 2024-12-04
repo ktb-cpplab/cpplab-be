@@ -13,6 +13,8 @@ pipeline {
         BRANCH_NAME = "${env.GIT_BRANCH}"
         DOCKER_TAG = "${env.BUILD_NUMBER}"  // Jenkins build number
         AWS_CREDENTIALS_ID = 'AWS_CREDENTIALS'
+        APPLICATION_YML = 'application.yml'
+        PROMETHEUS_YML = 'prometheus.yml'
     }
 
     stages {
@@ -27,8 +29,20 @@ pipeline {
 
         stage('Prepare Application Properties') {
             steps {
-                withCredentials([file(credentialsId: 'application-properties', variable: 'PROPERTIES')]) {
-                    sh "cp \$PROPERTIES application.properties"
+                script {
+                    // src/main/resources 디렉토리 생성
+                    sh 'mkdir -p src/main/resources/yaml'
+                }
+
+                withCredentials([file(credentialsId: 'application-yml', variable: 'APPLICATION_YML')]) {
+                    sh '''
+                        cp $APPLICATION_YML src/main/resources/application.yml
+                    '''
+                }
+                withCredentials([file(credentialsId: 'application-dev-yml', variable: 'APPLICATION_DEV_YML')]) {
+                    sh '''
+                        cp $APPLICATION_DEV_YML src/main/resources/yaml/application-dev.yml
+                    '''
                 }
             }
         }
@@ -71,30 +85,30 @@ pipeline {
     post {
         success {
             withCredentials([string(credentialsId: 'Discord-Backend-Webhook', variable: 'DISCORD')]) {
-                        discordSend description: """
-                        제목 : ${currentBuild.displayName}
-                        결과 : ${currentBuild.result}
-                        실행 시간 : ${currentBuild.duration / 1000}s
-                        """,
-                        link: env.BUILD_URL, result: currentBuild.currentResult,
-                        title: "${env.JOB_NAME} : ${currentBuild.displayName} 성공",
-                        webhookURL: "$DISCORD"
+                discordSend description: """
+                제목: ${currentBuild.displayName}
+                결과: 성공
+                실행 시간: ${currentBuild.duration / 1000}s
+                """,
+                link: env.BUILD_URL,
+                title: "✅ ${env.JOB_NAME} : ${currentBuild.displayName} 성공",
+                webhookURL: "$DISCORD"
             }
         }
         failure {
             withCredentials([string(credentialsId: 'Discord-Backend-Webhook', variable: 'DISCORD')]) {
-                        discordSend description: """
-                        제목 : ${currentBuild.displayName}
-                        결과 : ${currentBuild.result}
-                        실행 시간 : ${currentBuild.duration / 1000}s
-                        """,
-                        link: env.BUILD_URL, result: currentBuild.currentResult,
-                        title: "${env.JOB_NAME} : ${currentBuild.displayName} 실패",
-                        webhookURL: "$DISCORD"
+                discordSend description: """
+                제목: ${currentBuild.displayName}
+                결과: 실패
+                실행 시간: ${currentBuild.duration / 1000}s
+                """,
+                link: env.BUILD_URL,
+                title: "❌ ${env.JOB_NAME} : ${currentBuild.displayName} 실패",
+                webhookURL: "$DISCORD"
             }
         }
         always {
-            sh "rm -f application.properties" // 보안을 위해 빌드 완료 후 삭제
+            sh "rm -f src/main/resources/application.yml src/main/resources/yaml/application-dev.yml"
         }
     }
 }
