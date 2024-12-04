@@ -200,7 +200,6 @@ public class RoadmapService {
                     return aiUrlResponse; // 인스턴스 aiUrlResponse를 반환
                 })
                 .collect(Collectors.toList());
-
     }
 
 //    public List<AiUrlResponse> getRecommendations(RoadmapRequest roadmapRequest) {

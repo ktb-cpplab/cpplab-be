@@ -12,6 +12,7 @@ import com.cpplab.global.common.ApiResponse;
 import com.cpplab.global.common.code.status.ErrorStatus;
 import com.cpplab.global.common.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/roadmap")
+@Slf4j
 public class RoadmapController {
 
     private final RoadmapService roadmapService;

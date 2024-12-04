@@ -117,9 +117,5 @@ public class SecurityConfig {
             // 공통응답 테스트
             "/api/test/**",
 
-            // 프로메테우스 액추에이터
-            "/actuator",
-            "/actuator/**"
-
     };
 }
