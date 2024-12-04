@@ -17,9 +17,9 @@ public class CpplabApplication {
 	}
 
 	// HTTP 요청과 응답 과거 기록을 확인
-//	@Bean
-//	public InMemoryHttpExchangeRepository httpExchangeRepository() {
-//		return new InMemoryHttpExchangeRepository();
-//	}
+	@Bean
+	public InMemoryHttpExchangeRepository httpExchangeRepository() {
+		return new InMemoryHttpExchangeRepository();
+	}
 
 }
