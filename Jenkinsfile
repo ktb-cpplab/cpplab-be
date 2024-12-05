@@ -54,11 +54,17 @@ pipeline {
                         cp $APPLICATION_YML src/main/resources/application.yml
                     '''
                 }
+                withCredentials([file(credentialsId: 'application-prometheus-yml', variable: 'APPLICATION_PROMETEHUS_YML')]) {
+                    sh '''
+                        cp $APPLICATION_PROMETEHUS_YML src/main/resources/application-prometheus.yml
+                    '''
+                }
                 withCredentials([file(credentialsId: 'application-dev-yml', variable: 'APPLICATION_DEV_YML')]) {
                     sh '''
                         cp $APPLICATION_DEV_YML src/main/resources/yaml/application-dev.yml
                     '''
                 }
+                
             }
         }
 
