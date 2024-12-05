@@ -112,11 +112,10 @@ pipeline {
         }
         failure {
             withCredentials([string(credentialsId: 'Discord-Backend-Webhook', variable: 'DISCORD')]) {
-                def failedStageName = currentBuild.description ?: 'Unknown'
                 discordSend description: """
                 제목: ${currentBuild.displayName}
                 결과: 실패
-                실패한 단계: ${failedStageName}
+                실패한 단계: ${currentBuild.description ?: 'Unknown'}
                 실행 시간: ${currentBuild.duration / 1000}s
                 """,
                 link: env.BUILD_URL,
