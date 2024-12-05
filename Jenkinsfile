@@ -26,6 +26,21 @@ pipeline {
                 }
             }
         }
+        stage('Check Changes') {
+            steps {
+                script {
+                    currentBuild.description = 'Check Changes'
+                    def changes = sh(script: "git diff --name-only HEAD~1 HEAD", returnStdout: true).trim()
+                    echo "Changed files:\n${changes}"
+
+                    if (changes ==~ /^README(\.md)?$/) {
+                        echo "Only README file has changed. Skipping build and deployment."
+                        currentBuild.result = 'SUCCESS'
+                        error("Skipping pipeline as only README file has changed.")
+                    }
+                }
+            }
+        }
 
         stage('Prepare Application Properties') {
             steps {
@@ -97,9 +112,11 @@ pipeline {
         }
         failure {
             withCredentials([string(credentialsId: 'Discord-Backend-Webhook', variable: 'DISCORD')]) {
+                def failedStageName = currentBuild.description ?: 'Unknown'
                 discordSend description: """
                 제목: ${currentBuild.displayName}
                 결과: 실패
+                실패한 단계: ${failedStageName}
                 실행 시간: ${currentBuild.duration / 1000}s
                 """,
                 link: env.BUILD_URL,
