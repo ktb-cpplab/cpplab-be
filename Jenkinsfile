@@ -23,6 +23,12 @@ pipeline {
                 script {
                     currentBuild.description = 'Checkout'
                     git branch: "${BRANCH_NAME}", url: "https://github.com/${REPO}.git", credentialsId: "${GITHUB_CREDENTIALS_ID}"
+
+                    // src/main/resources 디렉토리 생성 및 권한 수정
+                    sh '''
+                        mkdir -p src/main/resources/yaml
+                        chmod -R u+w src/main/resources
+                    '''
                 }
             }
         }
