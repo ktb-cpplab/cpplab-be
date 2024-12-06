@@ -56,7 +56,7 @@ public record RoadmapResponse(
         public static TaskResponse from(TaskEntity taskEntity) {
             return TaskResponse.builder()
                     .taskId(taskEntity.getTaskId())
-                    .stepTitle(taskEntity.getStepTitle())
+                    .stepTitle(taskEntity.getTaskTitle())
                     .completed(taskEntity.isCompleted())
                     .build();
         }

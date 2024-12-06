@@ -68,7 +68,7 @@ public class RoadmapService {
 
             for (String taskTitle : stepRequest.tasks()) { // 문자열로 받아옴
                 TaskEntity task = new TaskEntity();
-                task.setStepTitle(taskTitle);
+                task.setTaskTitle(taskTitle);
                 task.setCompleted(false); // 초기화 상태
                 task.setStep(step);
                 step.getTasks().add(task);

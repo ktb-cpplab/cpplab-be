@@ -38,7 +38,7 @@ public class AuthService {
 //    ApiResponse<Map<String, Object>>
 //    public ApiResponse<Map<String, Object>> access(HttpServletRequest request, HttpServletResponse response) {
 
-        public ResponseEntity<?> reissueAccess(String refresh, HttpServletResponse response) {
+    public ResponseEntity<?> reissueAccess(String refresh, HttpServletResponse response) {
 
         ResponseEntity<String> validationResponse = validateRefreshToken(refresh);
         if (validationResponse != null) {
@@ -114,7 +114,6 @@ public class AuthService {
         if (!isExist) {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
-
         return null; // 유효성 검사를 통과한 경우 null 반환
     }
 
