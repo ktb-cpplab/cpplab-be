@@ -14,7 +14,7 @@ public class TaskEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long taskId;
 
-    private String stepTitle; // 업무제목
+    private String taskTitle; // 업무제목
     private boolean isCompleted = false; // 완료 여부, 기본 false
 
     @ManyToOne // // 여러 개의 StepEntity 하나의 RoadmapEntity
