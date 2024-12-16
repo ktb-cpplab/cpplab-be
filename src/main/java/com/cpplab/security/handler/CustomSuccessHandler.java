@@ -76,7 +76,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshEntity.setExpiration(date.toString());
 
         redisRefreshService.saveRefreshToken(userId, refresh, expiredMs);
-        refreshRepository.save(refreshEntity);
+//        refreshRepository.save(refreshEntity);
     }
 
     private Cookie createCookie(String key, String value) {

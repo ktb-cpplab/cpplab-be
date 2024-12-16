@@ -109,13 +109,13 @@ public class AuthService {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
-        // Redis에 저장되어 있는지 확인
+//        // Redis에 저장되어 있는지 확인
         Boolean isExist = redisTemplate.hasKey(String.valueOf(userId));
-        if (!Boolean.TRUE.equals(isExist)) {
+        if (!isExist) {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
-//        // DB에 저장되어 있는지 확인
+        // DB에 저장되어 있는지 확인
 //        Boolean isExist = refreshRepository.existsByRefresh(refresh);
 //        if (!isExist) {
 //            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
