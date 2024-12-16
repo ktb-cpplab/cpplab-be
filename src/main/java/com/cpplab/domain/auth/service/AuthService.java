@@ -13,6 +13,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class AuthService {
     @Value("${spring.jwt.token.refresh-expiration-time}")
     private long refreshTokenExpirationTime;
 
+    private final RedisTemplate<String, String> redisTemplate; // Redis 초기화 진행
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
     private final UserRepository userRepository;
@@ -40,16 +42,15 @@ public class AuthService {
 
     public ResponseEntity<?> reissueAccess(String refresh, HttpServletResponse response) {
 
-        ResponseEntity<String> validationResponse = validateRefreshToken(refresh);
+        Long userId = jwtUtil.getUserId(refresh);
+//        UserEntity user = userRepository.findById(userId)
+//                .orElseThrow(() ->  new GeneralException(ErrorStatus._NOT_FOUND_USER));
+//        String nickName = user.getNickName();
+
+        ResponseEntity<String> validationResponse = validateRefreshToken(userId, refresh);
         if (validationResponse != null) {
             return validationResponse; // 에러가 있을 경우 반환
         }
-
-        Long userId = jwtUtil.getUserId(refresh);
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() ->  new GeneralException(ErrorStatus._NOT_FOUND_USER));
-
-        String nickName = user.getNickName();
 
         // 새로운 JWT 생성
         String newAccess = jwtUtil.createJwt("access", userId, accessTokenExpirationTime);
@@ -60,7 +61,7 @@ public class AuthService {
 
         // Prepare custom response structure
         Map<String, Object> result = new HashMap<>();
-        result.put("nickName", nickName);
+//        result.put("nickName", nickName);
 
         // Return the response with the "result" structure
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -73,12 +74,11 @@ public class AuthService {
 
     public ResponseEntity<?> reissueTokens(String refresh, HttpServletResponse response) {
 
-        ResponseEntity<String> validationResponse = validateRefreshToken(refresh);
+        Long userId = jwtUtil.getUserId(refresh);
+        ResponseEntity<String> validationResponse = validateRefreshToken(userId, refresh);
         if (validationResponse != null) {
             return validationResponse; // 에러가 있을 경우 반환
         }
-
-        Long userId = jwtUtil.getUserId(refresh);
 
         // 새로운 JWT 생성
         String newAccess = jwtUtil.createJwt("access", userId, accessTokenExpirationTime);
@@ -95,7 +95,7 @@ public class AuthService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private ResponseEntity<String> validateRefreshToken(String refresh) {
+    private ResponseEntity<String> validateRefreshToken(Long userId, String refresh) {
         // expired check
         try {
             jwtUtil.isExpired(refresh);
@@ -109,11 +109,18 @@ public class AuthService {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
-        // DB에 저장되어 있는지 확인
-        Boolean isExist = refreshRepository.existsByRefresh(refresh);
-        if (!isExist) {
+        // Redis에 저장되어 있는지 확인
+        Boolean isExist = redisTemplate.hasKey(String.valueOf(userId));
+        if (!Boolean.TRUE.equals(isExist)) {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
+
+//        // DB에 저장되어 있는지 확인
+//        Boolean isExist = refreshRepository.existsByRefresh(refresh);
+//        if (!isExist) {
+//            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+//        }
+
         return null; // 유효성 검사를 통과한 경우 null 반환
     }
 

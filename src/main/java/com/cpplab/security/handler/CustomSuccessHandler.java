@@ -3,6 +3,7 @@ package com.cpplab.security.handler;
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
 import com.cpplab.domain.auth.entity.RefreshEntity;
 import com.cpplab.domain.auth.repository.RefreshRepository;
+import com.cpplab.domain.auth.service.RedisRefreshService;
 import com.cpplab.security.jwt.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -35,6 +36,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 
     private final JWTUtil jwtUtil;
+    private final RedisRefreshService redisRefreshService;
     private final RefreshRepository refreshRepository;
 
     @Override
@@ -64,8 +66,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.sendRedirect(feUrl);
     }
 
-
-
     private void addRefreshEntity(Long userId, String refresh, Long expiredMs) {
 
         Date date = new Date(System.currentTimeMillis() + expiredMs);
@@ -75,6 +75,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshEntity.setRefresh(refresh);
         refreshEntity.setExpiration(date.toString());
 
+        redisRefreshService.saveRefreshToken(userId, refresh, expiredMs);
         refreshRepository.save(refreshEntity);
     }
 
