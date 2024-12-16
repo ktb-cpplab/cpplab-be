@@ -19,6 +19,7 @@ import com.cpplab.domain.roadmap.repository.RoadmapRepository;
 import com.cpplab.global.common.code.status.ErrorStatus;
 import com.cpplab.global.common.enums.Rank;
 import com.cpplab.global.common.exception.GeneralException;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -64,6 +65,7 @@ public class PostService {
 //    }
 
     // 게시글 작성
+    @Counted(value = "post.create", description = "게시글 작성 카운트")
     public PostEntity createPost(Long userId, PostRequest.PostPutDto request) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_USER));
