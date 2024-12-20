@@ -117,5 +117,9 @@ public class SecurityConfig {
             // 공통응답 테스트
             "/api/test/**",
 
+            // 테스트
+            "/api/v1/roadmap/virtualthread",
+            "/api/v1/roadmap/syncgenproject",
+            "/api/v1/roadmap/asyncgenproject"
     };
 }
