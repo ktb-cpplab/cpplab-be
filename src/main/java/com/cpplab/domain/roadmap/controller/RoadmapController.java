@@ -92,6 +92,8 @@ public class RoadmapController {
         requestBody.put("mainStack", Arrays.asList("Python", "R", "MongoDB", "FastAPI"));
         requestBody.put("hopeCompany", Arrays.asList("대기업"));
         requestBody.put("hopeJob", "AI Engineer");
+        requestBody.put("companies", new ArrayList<>()); // 빈 리스트
+        requestBody.put("prizes", new ArrayList<>()); // 빈 리스트
 
         // 활동 데이터 추가
         List<Map<String, Object>> activities = new ArrayList<>();
@@ -163,7 +165,9 @@ public class RoadmapController {
         requestBody.put("mainStack", Arrays.asList("Python", "R", "MongoDB", "FastAPI"));
         requestBody.put("hopeCompany", Arrays.asList("대기업"));
         requestBody.put("hopeJob", "AI Engineer");
-
+        requestBody.put("companies", new ArrayList<>()); // 빈 리스트
+        requestBody.put("prizes", new ArrayList<>()); // 빈 리스트
+        
         // 활동 데이터 추가
         List<Map<String, Object>> activities = new ArrayList<>();
         activities.add(Map.of(
