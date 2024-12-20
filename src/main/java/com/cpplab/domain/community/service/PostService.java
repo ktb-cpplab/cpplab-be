@@ -78,7 +78,6 @@ public class PostService {
         post.setViews(0L);
 
         //해당 유저의 로드맵인지도 확인해야함
-
         // roadmapId가 존재하는 경우에만 설정
         if (request.roadmapId() != null) {
             RoadmapEntity roadmap = roadmapRepository.findById(request.roadmapId())
