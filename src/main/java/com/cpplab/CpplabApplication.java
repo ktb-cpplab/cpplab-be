@@ -25,4 +25,9 @@ public class CpplabApplication {
 		return new InMemoryHttpExchangeRepository();
 	}
 
+	// Timezone 설정
+	@PostConstruct
+	public void init() {
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+	}
 }
