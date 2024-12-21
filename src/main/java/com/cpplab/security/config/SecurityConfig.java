@@ -6,6 +6,7 @@ import java.util.Collections;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -39,7 +40,8 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RedisTemplate<String, String> redisTemplate; // Redis 초기화 진행
+//    private final RefreshRepository refreshRepository;
 
 //    private final CustomSuccessHandler customSuccessHandler;
 
@@ -80,7 +82,7 @@ public class SecurityConfig {
 
         // JWT 필터 설정
         http.addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
+        http.addFilterBefore(new CustomLogoutFilter(jwtUtil, redisTemplate), LogoutFilter.class);
 
         // 세션 설정: STATELESS
         http.sessionManagement(session -> session.sessionCreationPolicy(STATELESS));

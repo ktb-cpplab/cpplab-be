@@ -5,6 +5,7 @@ import com.cpplab.domain.roadmap.entity.roadmap.StepEntity;
 import com.cpplab.domain.roadmap.entity.roadmap.TaskEntity;
 import lombok.Builder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,9 @@ public record RoadmapResponse(
         String description,
         String difficultyLevel,
         String projectSummary,
-        List<StepResponse> steps
+        List<String> techStacks, // 주 기술스택
+        List<StepResponse> steps,
+        LocalDateTime createdAt
 ) {
     public static RoadmapResponse from(RoadmapEntity roadmapEntity) {
         return RoadmapResponse.builder()
@@ -24,6 +27,8 @@ public record RoadmapResponse(
                 .description(roadmapEntity.getDescription())
                 .difficultyLevel(roadmapEntity.getDifficultyLevel())
                 .projectSummary(roadmapEntity.getProjectSummary())
+                .techStacks(roadmapEntity.getTechStacks())
+                .createdAt(roadmapEntity.getCreatedAt())
                 .steps(roadmapEntity.getSteps().stream()
                         .map(StepResponse::from)
                         .collect(Collectors.toList()))
@@ -50,13 +55,13 @@ public record RoadmapResponse(
     @Builder
     public static record TaskResponse(
             Long taskId,
-            String stepTitle,
+            String taskTitle,
             boolean completed
     ) {
         public static TaskResponse from(TaskEntity taskEntity) {
             return TaskResponse.builder()
                     .taskId(taskEntity.getTaskId())
-                    .stepTitle(taskEntity.getTaskTitle())
+                    .taskTitle(taskEntity.getTaskTitle())
                     .completed(taskEntity.isCompleted())
                     .build();
         }
