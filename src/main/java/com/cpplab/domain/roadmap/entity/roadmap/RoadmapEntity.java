@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class RoadmapEntity extends BaseEntity {
     private String description;
     private String difficultyLevel; // 프로젝트 수준
     private String projectSummary; // 프로젝트 요약
+    private LocalDateTime completedAt; // 로드맵 완료 시각
 
     @ElementCollection
     private List<String> techStacks; // 주 기술스택
@@ -32,4 +34,9 @@ public class RoadmapEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "roadmap", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StepEntity> steps = new ArrayList<>();
+
+    // 완료 처리 메서드 추가
+    public void markAsCompleted() {
+        this.completedAt = LocalDateTime.now();
+    }
 }

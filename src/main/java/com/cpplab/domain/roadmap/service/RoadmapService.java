@@ -202,6 +202,22 @@ public class RoadmapService {
                 .collect(Collectors.toList());
     }
 
+    public RoadmapAndLectureResponse completeRoadmap(Long userId, Long roadmapId) {
+        RoadmapEntity roadmap = roadmapRepository.findById(roadmapId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._NOT_FOUND_ROADMAP));
+
+        if (!roadmap.getUser().getUserId().equals(userId)) {
+            throw new GeneralException(ErrorStatus._UNAUTHORIZED_ACCESS_ROADMAP);
+        }
+
+        roadmap.markAsCompleted(); // 완료 시간 기록
+        roadmapRepository.save(roadmap);
+
+        // 응답 DTO 생성 및 반환
+        return roadmapMapper.toDto(roadmap);
+    }
+
+
 //    public List<AiUrlResponse> getRecommendations(RoadmapRequest roadmapRequest) {
 //        HttpHeaders headers = new HttpHeaders();
 //        headers.set("Content-Type", "application/json");

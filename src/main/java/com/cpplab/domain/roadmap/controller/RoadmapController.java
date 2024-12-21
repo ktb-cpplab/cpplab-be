@@ -251,6 +251,12 @@ public class RoadmapController {
         return ApiResponse.onSuccess(roadmapService.readRoadmap(customUser.getUserId(), roadmapId));
     }
 
+    // 로드맵 종료
+    @PatchMapping("/{roadmapId}/completed")
+    public ApiResponse<RoadmapAndLectureResponse> completeRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable("roadmapId") Long roadmapId) {
+        return ApiResponse.onSuccess(roadmapService.completeRoadmap(customUser.getUserId(), roadmapId));
+    }
+
     // 로드맵 삭제
     @DeleteMapping("/{roadmapId}")
     public ApiResponse<String> deleteRoadmap(@AuthenticationPrincipal CustomOAuth2User customUser, @PathVariable("roadmapId") Long roadmapId) {
