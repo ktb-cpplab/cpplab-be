@@ -1,5 +1,6 @@
 package com.cpplab.domain.roadmap.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record RoadmapRequest(
@@ -9,5 +10,6 @@ public record RoadmapRequest(
         String difficultyLevel, // 프로젝트 수준
         String projectSummary, // 프로젝트 요약
         List<StepRequest> steps // 스텝 리스트
+
 ) {
 }

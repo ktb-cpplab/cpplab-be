@@ -2,7 +2,6 @@ package com.cpplab.security.handler;
 
 import com.cpplab.domain.auth.dto.CustomOAuth2User;
 import com.cpplab.domain.auth.entity.RefreshEntity;
-import com.cpplab.domain.auth.repository.RefreshRepository;
 import com.cpplab.domain.auth.service.RedisRefreshService;
 import com.cpplab.security.jwt.JWTUtil;
 import jakarta.servlet.ServletException;
@@ -37,7 +36,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JWTUtil jwtUtil;
     private final RedisRefreshService redisRefreshService;
-    private final RefreshRepository refreshRepository;
+//    private final RefreshRepository refreshRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {

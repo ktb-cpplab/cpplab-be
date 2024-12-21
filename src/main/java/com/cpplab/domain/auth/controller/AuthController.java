@@ -45,6 +45,7 @@ public class AuthController {
             throw new GeneralException(ErrorStatus.TOKEN_NOT_FOUND);
         }
 
+
         ResponseEntity<?> responseEntity = authService.reissueAccess(refresh, response);
 
         // Wrap result in ApiResponse and return
