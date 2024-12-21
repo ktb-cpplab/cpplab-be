@@ -16,7 +16,8 @@ public record RoadmapAndLectureResponse(
         List<String> techStacks, // 주 기술스택
         List<StepEntity> steps,
         List<LectureResponse> lectures,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        LocalDateTime completedAt
 
 ) {
     public record LectureResponse(Long lectureId, String title, String url) {}

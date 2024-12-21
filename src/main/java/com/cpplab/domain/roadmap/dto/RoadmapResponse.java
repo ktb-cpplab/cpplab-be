@@ -18,7 +18,8 @@ public record RoadmapResponse(
         String projectSummary,
         List<String> techStacks, // 주 기술스택
         List<StepResponse> steps,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        LocalDateTime completedAt
 ) {
     public static RoadmapResponse from(RoadmapEntity roadmapEntity) {
         return RoadmapResponse.builder()
@@ -29,6 +30,7 @@ public record RoadmapResponse(
                 .projectSummary(roadmapEntity.getProjectSummary())
                 .techStacks(roadmapEntity.getTechStacks())
                 .createdAt(roadmapEntity.getCreatedAt())
+                .completedAt(roadmapEntity.getCompletedAt())
                 .steps(roadmapEntity.getSteps().stream()
                         .map(StepResponse::from)
                         .collect(Collectors.toList()))

@@ -33,6 +33,7 @@ public class RoadmapMapper {
                 .techStacks(roadmap.getTechStacks())
                 .steps(roadmap.getSteps())
                 .createdAt(roadmap.getCreatedAt())
+                .completedAt(roadmap.getCompletedAt())
                 .lectures(lectures)
                 .build();
     }
