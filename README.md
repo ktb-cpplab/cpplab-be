@@ -11,7 +11,7 @@
 <details>
     <summary>📘소셜로그인 순서도</summary>
     <div markdown="1">
-    <img src="https://github.com/user-attachments/assets/88d90995-aebd-4ed5-bbd2-be6f8c588351">
+    <img width="650" src="https://github.com/user-attachments/assets/88d90995-aebd-4ed5-bbd2-be6f8c588351"> </br>
     (스프링의 oauth2-client 라이브러리 + JWT + Redis)를 결합하여 소셜로그인을 구현했습니다.</br>
     프론트 서버에서 엑세스 토큰으로 로그인 상태처리를 위해 AccessToken를 전달해야 합니다.</br>
     href요청은 데이터 요청 전달이 불가하기에 useEffect로 AccessToken 재요청하였습니다.</br>
@@ -20,7 +20,7 @@
 <details>
     <summary>📘토큰 저장소 선정 방식</summary>
     <div markdown="1">
-    <img width="655" alt="image" src="https://github.com/user-attachments/assets/9723eaaf-8df1-4e9d-9c9a-6e384683113e" /> </br>
+    <img width="400" alt="image" src="https://github.com/user-attachments/assets/9723eaaf-8df1-4e9d-9c9a-6e384683113e" /> </br>
     클라이언트 </br>
       - cookie: Refresh Token </br>
       - local stoarge: Access Token </br>
@@ -40,7 +40,7 @@
        
 ### nGrinder
 
-<img src="https://github.com/user-attachments/assets/1b4e8ba3-b8d1-47f9-9954-af945a7964e4">
+<img width="450" src="https://github.com/user-attachments/assets/1b4e8ba3-b8d1-47f9-9954-af945a7964e4">
 
 local 테스트를 Jmeter를 이용해서 확인했습니다.
 
@@ -54,7 +54,7 @@ nGrinder는 기본적으로 여러 개의 Agent를 사용해 분산 테스트를
 
 ### 문제점
 
-   <img src="https://github.com/user-attachments/assets/c7b59832-8f25-4458-a6d9-2a758ed6b382">
+   <img width="450" src="https://github.com/user-attachments/assets/c7b59832-8f25-4458-a6d9-2a758ed6b382">
       
    프로젝트 추천 기능은 응답이 느리더라도 답변 품질 향상이 중요합니다.
    
@@ -97,12 +97,12 @@ nGrinder는 기본적으로 여러 개의 Agent를 사용해 분산 테스트를
    <table>
         <tr>
           <td align="center">
-            <img width="1203" alt="Platform Thread TPS" src="https://github.com/user-attachments/assets/bf57dba9-a77c-4dd0-b4ef-b5a6f93068d4" width="400"/>
+            <img width="1203" alt="Platform Thread TPS" src="https://github.com/user-attachments/assets/bf57dba9-a77c-4dd0-b4ef-b5a6f93068d4" width="350"/>
             <br>
             <b>&lt;Platform Thread TPS&gt;</b>
           </td>
           <td align="center">
-            <img width="1212" alt="Virtual Thread TPS" src="https://github.com/user-attachments/assets/b6831090-5551-4378-aeed-4a613b5cb82e" width="400"/>
+            <img width="1212" alt="Virtual Thread TPS" src="https://github.com/user-attachments/assets/b6831090-5551-4378-aeed-4a613b5cb82e" width="350"/>
             <br>
             <b>&lt;Virtual Thread TPS&gt;</b>
           </td>
@@ -113,7 +113,7 @@ nGrinder는 기본적으로 여러 개의 Agent를 사용해 분산 테스트를
    
    ### 운영환경 테스트
    
-   <img src="https://github.com/user-attachments/assets/3ad203b9-9fcd-445d-9ada-4c899a7ba69b">
+   <img width="650" src="https://github.com/user-attachments/assets/3ad203b9-9fcd-445d-9ada-4c899a7ba69b">
    
    부하테스트 요금을 아끼기 위해 2가지 방법을 사용했습니다.
    
@@ -165,7 +165,7 @@ nGrinder는 기본적으로 여러 개의 Agent를 사용해 분산 테스트를
    
    ### 테스트 트러블슈팅
    
-   <img width="381" alt="image (3)" src="https://github.com/user-attachments/assets/2f3a4576-3479-4df8-8f28-9af38527ee92" />
+   <img width="380" alt="image (3)" src="https://github.com/user-attachments/assets/2f3a4576-3479-4df8-8f28-9af38527ee92" />
 
    인스턴스 t2.small의 agent 스펙을 사용했는데 vUser가 1500일 때 인스턴스가 lack of free memory로 죽어서 인스턴스의 스펙을 t3a.large로 올려서 MEM 20%로 안정적으로 Vuser 환경을 만들었습니다.
 
