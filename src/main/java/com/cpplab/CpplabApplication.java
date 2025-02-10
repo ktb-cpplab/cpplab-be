@@ -1,6 +1,7 @@
 package com.cpplab;
 
 import com.cpplab.domain.community.config.PostMetricConfig;
+import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
