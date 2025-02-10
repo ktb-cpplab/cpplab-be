@@ -3,6 +3,7 @@ package com.cpplab.security.config;
 
 import java.util.Collections;
 
+import com.cpplab.security.repository.HttpCookieOAuth2AuthorizationRequestRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -41,9 +44,7 @@ public class SecurityConfig {
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
     private final RedisTemplate<String, String> redisTemplate; // Redis 초기화 진행
-//    private final RefreshRepository refreshRepository;
-
-//    private final CustomSuccessHandler customSuccessHandler;
+    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -75,10 +76,19 @@ public class SecurityConfig {
         // HTTP Basic 인증 비활성화
         http.httpBasic(AbstractHttpConfigurer::disable);
 
-        // OAuth2 로그인 설정
-        http.oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler)
+        // 새로운: OAuth2 로그인 설정
+        http.oauth2Login(oauth2 -> oauth2
+                .authorizationEndpoint(authorization -> authorization
+                        .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository) // Cookie 기반으로 요청 상태 저장
+                )
+                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                .successHandler(customSuccessHandler)
         );
+
+        // 기존: OAuth2 로그인 설정
+//        http.oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+//                        .successHandler(customSuccessHandler)
+//        );
 
         // JWT 필터 설정
         http.addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
@@ -110,6 +120,8 @@ public class SecurityConfig {
             "api/v1/auth/reissue", // 엑세스토큰 리프레시 토큰으로 재발급 경로
             "api/v1/auth/access", // 첫 로그인시, 엑세스 토큰 헤더 전달을 위한 경로
             "/api/v1/health",
+            "/error",
+            "/sentry",
 
             // swagger
             "/v3/api-docs/**",
@@ -118,6 +130,8 @@ public class SecurityConfig {
 
             // 공통응답 테스트
             "/api/test/**",
+
+
 
             // 테스트
             "/api/v1/roadmap/virtualthread",

@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,6 +23,7 @@ import java.util.Iterator;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Value("${fe.url}")
@@ -40,6 +42,21 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
+        // 세션 무효화: 기존 세션이 있으면 무효화
+//        if (request.getSession(false) != null) {
+//            log.info("세션이 존재합니다. 세션을 무효화합니다.");
+//            request.getSession().invalidate();
+//
+//            // JSESSIONID 쿠키 삭제
+//            Cookie cookie = new Cookie("JSESSIONID", null);
+//            cookie.setPath("/");
+//            cookie.setHttpOnly(true);
+//            cookie.setMaxAge(0); // 쿠키 즉시 만료
+//            response.addCookie(cookie);
+//        } else {
+//            log.info("세션이 존재하지 않습니다. 새로운 세션을 생성하지 않습니다.");
+//        }
 
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
