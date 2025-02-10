@@ -7,8 +7,8 @@ pipeline {
         ECR_CREDENTIALS_ID = 'ecr:ap-northeast-2:AWS_CREDENTIALS'
         GITHUB_CREDENTIALS_ID = 'github_token'
         REMOTE_USER = 'ubuntu'
-        ECS_CLUSTER_NAME = 'cpplab-ecs-cluster'
-        ECS_SERVICE_NAME = 'my-be-service'
+        ECS_CLUSTER_NAME = 'cpplab-prod'
+        ECS_SERVICE_NAME = 'prod-be-service'
         AWS_REGION = 'ap-northeast-2'
         BRANCH_NAME = "${env.GIT_BRANCH}"
         DOCKER_TAG = "${env.BUILD_NUMBER}"  // Jenkins build number
@@ -72,7 +72,7 @@ pipeline {
                 }
                 withCredentials([file(credentialsId: 'application-log-yml', variable: 'APPLICATION_LOG_YML')]) {
                     sh '''
-                        cp $APPLICATION_LOG_YML src/main/resources/yaml/application-log.yml
+                        cp $APPLICATION_LOG_YML src/main/resources/logging/application-log.yml
                     '''
                 }
                 
