@@ -70,6 +70,11 @@ pipeline {
                         cp $APPLICATION_DEV_YML src/main/resources/yaml/application-dev.yml
                     '''
                 }
+                withCredentials([file(credentialsId: 'application-log-yml', variable: 'APPLICATION_LOG_YML')]) {
+                    sh '''
+                        cp $APPLICATION_LOG_YML src/main/resources/yaml/application-log.yml
+                    '''
+                }
                 
             }
         }
