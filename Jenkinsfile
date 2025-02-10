@@ -53,6 +53,7 @@ pipeline {
                 script {
                     // src/main/resources 디렉토리 생성
                     sh 'mkdir -p src/main/resources/yaml'
+                    sh 'mkdir -p src/main/resources/logging'
                 }
 
                 withCredentials([file(credentialsId: 'application-yml', variable: 'APPLICATION_YML')]) {
